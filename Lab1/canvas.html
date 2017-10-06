@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Canvas</title>
+
+    <style type="text/css">
+	
+    </style>
+
+  </head>
+
+  <body>
+
+    <canvas id="canvasOne"></canvas>
+	
+	<div id="demo"></div>
+
+    <script type="text/javascript">
+		// Gets a handle to the element with id canvasOne.
+		var canvas = document.getElementById("canvasOne");
+		// Set the canvas up for drawing in 2D.
+		var ctx = canvas.getContext("2d");
+		
+		// Lab1 Excercises
+		// 3)
+		canvas.style.border = "solid 1px black";
+		
+		// 4)
+		canvas.width = 500;
+		canvas.height = 800;
+		
+		// Set the fill colour to bright red.
+		ctx.fillStyle = "rgb(255, 0, 0)";
+		
+		// 5)
+		ctx.fillStyle = "rgb(255, 255, 0)";
+		
+		// Create a filled rectangle at co-ordinates (10,10)
+		// with height and width set to 100.
+		ctx.fillRect(10, 10, 100, 100);
+		
+		// 6)
+		ctx.fillRect(10, 10, 300, 200);
+	  
+	    // 7)
+		ctx.fillStyle = "rgb(0, 255, 255)";
+		ctx.fillRect(10, 230, 200, 100);
+		
+		// 8)
+		ctx.fillStyle = "rgba(255, 0, 255, 0.4)";
+		ctx.fillRect(230, 10, 200, 100);
+		
+		// 9)
+		ctx.beginPath();
+        ctx.arc(100,75,50,0,2*Math.PI, true);
+        ctx.stroke();
+		ctx.fillStyle = "rgb(255, 0, 0)";
+		ctx.fill();
+		
+		ctx.beginPath();
+        ctx.arc(100,175,50,0,2*Math.PI, true);
+        ctx.stroke();
+		ctx.fillStyle = "rgb(0, 0, 255)";
+		ctx.fill();
+		
+		// 10)
+		ctx.strokeRect(10, 10, 300, 200);
+		ctx.strokeRect(10, 230, 200, 100);
+		ctx.strokeRect(230, 10, 200, 100);
+		
+		// 11)
+		ctx.strokeRect(230, 350, 100, 100);
+		ctx.beginPath();
+        ctx.arc(280,400,50,0,2*Math.PI, true);
+        ctx.stroke();
+		
+		// Advanced Excercises
+		// 1)
+		function animation() {
+			ctx.clearRect(228, 348, 104, 104);
+			
+			ctx.strokeRect(280, 350, 100, 100);
+			ctx.beginPath();
+			ctx.arc(330,400,50,0,2*Math.PI, true);
+			ctx.stroke();
+		}
+		
+		setTimeout(animation, 3000);
+		
+		// 2)
+		var pivot = false;
+		
+		function drawOpenPacman() {
+			// Pac-man body
+			ctx.beginPath();
+			ctx.arc(250, 600, 100, 1.75*Math.PI, 0.25*Math.PI, true);
+			ctx.lineTo(250, 600);
+			ctx.lineTo(250 + (100 * Math.cos(0.25*Math.PI)),600 + (100 * Math.sin(1.75*Math.PI)));
+			ctx.stroke();
+			ctx.fillStyle = "rgb(255, 255, 0)";
+			ctx.fill();
+			
+			// Pac-man eye
+			ctx.beginPath();
+			ctx.arc(265,540,10,0,2*Math.PI, true);
+			ctx.stroke();
+			ctx.fillStyle = "rgb(255, 255, 255)";
+			ctx.fill();
+			
+			// Pac-man pupil
+			ctx.beginPath();
+			ctx.arc(265,540,5,0,2*Math.PI, true);
+			ctx.stroke();
+			ctx.fillStyle = "rgb(0, 0, 0)";
+			ctx.fill();
+		}
+		
+		function drawClosedPacman() {
+			// Pac-man body
+			ctx.beginPath();
+			ctx.arc(250, 600, 100, 2*Math.PI, 0, true);
+			ctx.fillStyle = "rgb(255, 255, 0)";
+			ctx.fill();
+			ctx.lineTo(250, 600);
+			ctx.stroke();
+			
+			// Pac-man eye
+			ctx.beginPath();
+			ctx.arc(303,568,10,0,2*Math.PI, true);
+			ctx.stroke();
+			ctx.fillStyle = "rgb(255, 255, 255)";
+			ctx.fill();
+			
+			// Pac-man pupil
+			ctx.beginPath();
+			ctx.arc(303,568,5,0,2*Math.PI, true);
+			ctx.fillStyle = "rgb(0, 0, 0)";
+			ctx.fill();
+		}		
+		
+		function animatePacman() {
+			ctx.clearRect(148, 498, 204, 204);
+			pivot = !pivot;
+			// console.log(pivot);
+			
+			if ( pivot ) {
+				drawOpenPacman();
+			}
+			else {
+				drawClosedPacman();
+			}
+		}
+		
+		window.setInterval(animatePacman,500);
+		
+//5391 2320 1389 0301   09/22  781
+// 87 994 7399	
+
+    </script>
+
+  </body>
+
+</html>
