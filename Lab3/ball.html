@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Canvas</title>
+
+    <style type="text/css">
+      body {
+          background-color: white;
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+    <canvas id="canvas-for-ball"></canvas>
+
+    <script type="text/javascript">
+      // Gets a handle to the element with id canvasOne.
+      var canvas = document.getElementById("canvas-for-ball");
+      // Get a 2D context for the canvas.
+      var ctx = canvas.getContext("2d");
+
+      // Lab3
+      // 1)
+      canvas.width = 1220;
+		  canvas.height = 600;
+		  canvas.style.border = "solid 1px black";
+
+      // 4)
+      // From Lab2
+      var ball = {
+        xpos: 0,
+        ypos: 0,
+        r: 0,
+        move: function(xIncrement, yIncrement) {
+          this.xpos += xIncrement;
+          this.ypos += yIncrement;
+        },
+        draw: function() {
+          ctx.beginPath();
+          ctx.arc(this.xpos, this.ypos, this.r, 0, 2*Math.PI, true);
+          ctx.stroke();
+          // ctx.fillStyle = "rgb(255, 0, 0)";
+          // ctx.fill();
+          }
+	  	}; // ball
+
+      ball.xpos = 70;
+      ball.ypos = 50;
+      ball.r = 50;
+
+      // The vertical location of the ball.
+      var y = 10;
+
+      // These variables are used in questions 5), 6) and 7)
+      var yMax = 550;
+      var yMin = 50;
+
+      var xMax = 1170;
+      var xMin = 50;
+
+      var ySpeed = 3;
+      var xSpeed = 3;
+
+      function xyToConsole(xpos, ypos) {
+      console.log("xpos: ", xpos, "\nypos: ", ypos);
+      // console.log("xpos: ", xpos);
+      }
+
+
+      // A function to repeat every time the animation loops.
+      function repeatme() {
+
+      // 2)
+          ctx.clearRect(0, 0, 1220, 600);
+          // Draw the ball (stroked, not filled).
+          // ctx.beginPath();
+          // ctx.arc(50, y, 3, 0, 2 * Math.PI);
+          // ctx.stroke();
+
+      // 5)
+          ball.draw();
+          ball.move(xSpeed, ySpeed);
+
+          // ball.move(0, ySpeed);
+          // if ( ball.ypos > yMax ) {
+
+      // 6)
+          if ( ball.ypos > yMax  || ball.ypos < yMin ) {
+            // ySpeed = 0;
+            ySpeed *= -1 ;
+          }
+
+      // 7)
+          if ( ball.xpos > xMax  || ball.xpos < xMin ) {
+            // ySpeed = 0;
+            xSpeed *= -1 ;
+          }
+
+      // 3)
+        // if ( y < 598 ) {
+        //   // Update the y location.
+        //   y += 1;
+        // }
+
+        window.requestAnimationFrame(repeatme);
+      } // repeatme
+      
+      // Get the animation going.
+      repeatme();
+    </script>
+
+  </body>
+
+</html>
