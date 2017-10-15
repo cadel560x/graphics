@@ -49,7 +49,7 @@
 		}
 
 		move(1, 1);
-		xyToConsole();
+		xyToConsole(xpos, ypos);
 
 		// 4)
 		var ball = {
@@ -76,7 +76,7 @@
 				ctx.fillStyle = "rgb(255, 0, 0)";
 				ctx.fill();
 			}
-		};
+		}; // ball
 
 		// 8)
 		ball.move(50, 50);
@@ -95,31 +95,183 @@
 		// xyToConsole(ball.xpos, ball.ypos);
 
 		// 9)
-			var pizza = {
+		var pizza = {
 			xpos: 0,
 			ypos: 0,
 			r: 0,
 
-		// 5)
 			move: function(xIncrement, yIncrement) {
 				this.xpos += xIncrement;
 				this.ypos += yIncrement;
 			},
 
-		// 6)
 			resize: function(radius) {
 				this.r = radius;
 			},
 
-		// 7)
 			draw: function() {
+				prevAngle = 0;
+				
+				// Paint the whole circle and fill it with orange 
 				ctx.beginPath();
 				ctx.arc(this.xpos, this.ypos, this.r, 0, 2*Math.PI, true);
-				ctx.stroke();
-				ctx.fillStyle = "rgb(255, 0, 0)";
+				ctx.fillStyle = "rgb(255, 165, 0)";
 				ctx.fill();
+
+				// Paint seven slices, 'i' increments every 7th of '2*PI', a 7th of circumference 
+				for (var i = 0; i < 2*Math.PI; i += (2/7)*Math.PI ) {
+					ctx.arc(this.xpos, this.ypos, this.r, prevAngle, i, true);
+					ctx.lineTo(this.xpos, this.ypos);
+					ctx.stroke();
+
+					// Save the current angle so it will be the starting point of the next arc 
+					prevAngle = i;
+				}
+
+				// Paint the inner circle, this radius is a fraction of the pizza radius
+				ctx.arc(this.xpos, this.ypos, this.r*0.93, 0, 2*Math.PI, true);
+				ctx.stroke();
+			},
+
+		// Advanced exercises 1)
+			rotate: function(startAngle) {
+				prevAngle = startAngle;
+
+				// Erase any previously painted pizza 
+				ctx.clearRect(this.xpos-this.r, this.ypos-this.r, this.xpos+this.r, this.ypos+this.r);
+
+				// Paint the whole circle and fill it with orange 
+				ctx.beginPath();
+				ctx.arc(this.xpos, this.ypos, this.r, 0, 2*Math.PI, true);
+				ctx.fillStyle = "rgb(255, 165, 0)";
+				ctx.fill();
+
+				// Paint seven slices shifting from a start angle 
+				ctx.beginPath();
+				for (var i = startAngle; i < 2*Math.PI + startAngle; i += (2/7)*Math.PI ) {
+					ctx.arc(this.xpos, this.ypos, this.r, prevAngle, i, true);
+					ctx.lineTo(this.xpos, this.ypos);
+					ctx.stroke();
+
+					// Save the current angle so it will be the starting point of the next arc 
+					prevAngle = i;
+				}
+
+				// Paint the inner circle, this radius is a fraction of the pizza radius
+				ctx.arc(this.xpos, this.ypos, this.r*0.93, 0, 2*Math.PI, true);
+				ctx.stroke();
+			},
+
+			// Advanced exercises 2)
+			contains: function(xPoint, yPoint) {
+				// Pythagoras to measure the distance between your point and the centre and see if it's lower than the radius 
+				if ( Math.pow(xPoint - this.xpos, 2) + Math.pow(yPoint - this.ypos, 2) <= Math.pow(this.r, 2) ) {
+					return true;
+				}
+				return false;
+			}			
+		}; // pizza
+
+		pizza.move(350,100);
+		pizza.resize(70);
+		pizza.draw();
+		pizza.rotate(Math.PI/6);
+		console.log("Is point (360, 100) inside the pizza? ", pizza.contains(360, 100));
+		console.log("Is point (5, 5) inside the pizza? ", pizza.contains(5, 5));
+
+		// Advanced exercises 3)
+		function Ball(x, y, r) {
+			this.xpos = x;
+			this.ypos = y;
+			this.r = r;
+
+			this.move = function(xIncrement, yIncrement) {
+				this.xpos += xIncrement;
+				this.ypos += yIncrement;
+			};
+
+			this.resize = function(radius) {
+				this.r = radius;
+			};
+
+			this.draw = function() {
+				prevAngle = 0;
+				
+				// Paint the whole circle and fill it with orange 
+				ctx.beginPath();
+				ctx.arc(this.xpos, this.ypos, this.r, 0, 2*Math.PI, true);
+				ctx.fillStyle = "rgb(255, 165, 0)";
+				ctx.fill();
+
+				// Paint seven slices, 'i' increments every 7th of '2*PI', a 7th of circumference 
+				for (var i = 0; i < 2*Math.PI; i += (2/7)*Math.PI ) {
+					ctx.arc(this.xpos, this.ypos, this.r, prevAngle, i, true);
+					ctx.lineTo(this.xpos, this.ypos);
+					ctx.stroke();
+
+					// Save the current angle so it will be the starting point of the next arc 
+					prevAngle = i;
+				}
+
+				// Paint the inner circle, this radius is a fraction of the pizza radius
+				ctx.arc(this.xpos, this.ypos, this.r*0.93, 0, 2*Math.PI, true);
+				ctx.stroke();
+			};
+
+			this.rotate = function(startAngle) {
+				prevAngle = startAngle;
+
+				// Erase any previously painted pizza 
+				ctx.clearRect(this.xpos-this.r, this.ypos-this.r, this.xpos+this.r, this.ypos+this.r);
+
+				// Paint the whole circle and fill it with orange 
+				ctx.beginPath();
+				ctx.arc(this.xpos, this.ypos, this.r, 0, 2*Math.PI, true);
+				ctx.fillStyle = "rgb(255, 165, 0)";
+				ctx.fill();
+
+				// Paint seven slices shifting from a start angle 
+				ctx.beginPath();
+				for (var i = startAngle; i < 2*Math.PI + startAngle; i += (2/7)*Math.PI ) {
+					ctx.arc(this.xpos, this.ypos, this.r, prevAngle, i, true);
+					ctx.lineTo(this.xpos, this.ypos);
+					ctx.stroke();
+
+					// Save the current angle so it will be the starting point of the next arc 
+					prevAngle = i;
+				}
+
+				// Paint the inner circle, this radius is a fraction of the pizza radius
+				ctx.arc(this.xpos, this.ypos, this.r*0.93, 0, 2*Math.PI, true);
+				ctx.stroke();
+			};
+
+			this.contains = function(xPoint, yPoint) {
+				// Pythagoras to measure the distance between your point and the centre and see if it's lower than the radius 
+				if ( Math.pow(xPoint - this.xpos, 2) + Math.pow(yPoint - this.ypos, 2) <= Math.pow(this.r, 2) ) {
+					return true;
+				}
+				return false;
+			};
+
+			// Advanced exercises 4)
+			this.intersect = function(otherBall) {
+				// Pythagoras to measure the distance between your point and the centre and see if it's lower than the radius 
+				if ( Math.sqrt(Math.pow(otherBall.xpos - this.xpos, 2) + Math.pow(otherBall.ypos - this.ypos, 2)) <= otherBall.r + this.r ) {
+					return true;
+				}
+				return false;
 			}
-		};
+		}
+		
+		var pizza2 = new Ball(550, 100, 70);
+		pizza2.draw();
+		console.log("Does 'pizza2' intersect 'pizza'? ", pizza2.intersect(pizza));
+
+		var pizza3 = new Ball(660, 100, 70);
+		pizza3.draw();
+		console.log("Does 'pizza3' intersect 'pizza2'? ", pizza3.intersect(pizza2));
+
 
     </script>
 
