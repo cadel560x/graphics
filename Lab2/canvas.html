@@ -256,13 +256,13 @@
 
 			// Advanced exercises 4)
 			this.intersect = function(otherBall) {
-				// Pythagoras to measure the distance between your point and the centre and see if it's lower than the radius 
+				// Pythagoras to measure the distance between the centre and the otherBall's centre and see if it's lower than the sum of the radius 
 				if ( Math.sqrt(Math.pow(otherBall.xpos - this.xpos, 2) + Math.pow(otherBall.ypos - this.ypos, 2)) <= otherBall.r + this.r ) {
 					return true;
 				}
 				return false;
 			}
-		}
+		} // Ball constructor
 		
 		var pizza2 = new Ball(550, 100, 70);
 		pizza2.draw();

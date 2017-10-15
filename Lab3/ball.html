@@ -57,7 +57,7 @@
       // The vertical location of the ball.
       var y = 10;
 
-      // These variables are used in questions 5), 6) and 7)
+      // These variables are used in questions 5), 6), 7) and 8)
       var yMax = 550;
       var yMin = 50;
 
@@ -71,6 +71,103 @@
       console.log("xpos: ", xpos, "\nypos: ", ypos);
       // console.log("xpos: ", xpos);
       }
+
+      // 8)
+      // Ball constructor from Lab 2 for pizza object
+      function Ball(x, y, r, xSpeed, ySpeed) {
+			this.xpos = x;
+			this.ypos = y;
+			this.r = r;
+      this.ySpeed = xSpeed;
+      this.xSpeed = ySpeed;
+      this.startAngle = 0;
+      var gravity = 0.1;
+      var fac = 0.8;
+
+			this.move = function(xIncrement, yIncrement) {
+				this.xpos += xIncrement;
+				this.ypos += yIncrement;
+			};
+
+			this.resize = function(radius) {
+				this.r = radius;
+			};
+
+			this.draw = function() {
+				prevAngle = 0;
+				
+				// Paint the whole circle and fill it with orange 
+				ctx.beginPath();
+				ctx.arc(this.xpos, this.ypos, this.r, 0, 2*Math.PI, true);
+				ctx.fillStyle = "rgb(255, 165, 0)";
+				ctx.fill();
+
+				// Paint seven slices, calling the 'rotate' method
+        this.rotate(this.startAngle);
+
+				// Paint the inner circle, this radius is a fraction of the pizza radius
+				ctx.arc(this.xpos, this.ypos, this.r*0.93, 0, 2*Math.PI, true);
+				ctx.stroke();
+			};
+
+			this.rotate = function(startAngle) {
+				prevAngle = startAngle;
+
+				// Paint seven slices shifting from a start angle 
+				ctx.beginPath();
+				for (var i = startAngle; i < 2*Math.PI + startAngle; i += (2/7)*Math.PI ) {
+          // if ( this.xSpeed < 0 || this.ySpeed < 0 ) {
+					//   ctx.arc(this.xpos, this.ypos, this.r, prevAngle, i, false);
+          // } else {
+          ctx.arc(this.xpos, this.ypos, this.r, prevAngle, i, true);
+          // }
+					ctx.lineTo(this.xpos, this.ypos);
+					ctx.stroke();
+
+					// Save the current angle so it will be the starting point of the next arc 
+					prevAngle = i;
+				}
+			};
+
+			this.contains = function(xPoint, yPoint) {
+				// Pythagoras to measure the distance between your point and the centre and see if it's lower than the radius 
+				if ( Math.pow(xPoint - this.xpos, 2) + Math.pow(yPoint - this.ypos, 2) <= Math.pow(this.r, 2) ) {
+					return true;
+				}
+				return false;
+			};
+
+			this.intersect = function(otherBall) {
+				// Pythagoras to measure the distance between the centre and the otherBall's centre and see if it's lower than the sum of the radius 
+				if ( Math.sqrt(Math.pow(otherBall.xpos - this.xpos, 2) + Math.pow(otherBall.ypos - this.ypos, 2)) <= otherBall.r + this.r ) {
+					return true;
+				}
+				return false;
+			};
+
+      // 8)
+      this.displacement = function(xMin, yMin, xMax, yMax) {
+        this.ySpeed += gravity;
+        this.move(this.xSpeed, this.ySpeed);
+
+        // Advanced exercise 1)
+        if ( xSpeed < 0 || ySpeed < 0 ) {
+          this.draw(this.startAngle -= Math.PI/4);
+        } else {
+          this.draw(this.startAngle += Math.PI/6);
+        }
+
+        if ( this.ypos > yMax || this.ypos < yMin ) {
+            this.ySpeed *= -1*fac;
+          }
+
+        if ( this.xpos > xMax || this.xpos < xMin ) {
+          this.xSpeed *= -1 ;
+        }
+      }
+		} // Ball constructor
+
+    var pizza = new Ball(550, 150, 70, 1, 1);
 
 
       // A function to repeat every time the animation loops.
@@ -87,18 +184,13 @@
           ball.draw();
           ball.move(xSpeed, ySpeed);
 
-          // ball.move(0, ySpeed);
-          // if ( ball.ypos > yMax ) {
-
       // 6)
           if ( ball.ypos > yMax  || ball.ypos < yMin ) {
-            // ySpeed = 0;
             ySpeed *= -1 ;
           }
 
       // 7)
           if ( ball.xpos > xMax  || ball.xpos < xMin ) {
-            // ySpeed = 0;
             xSpeed *= -1 ;
           }
 
@@ -107,6 +199,10 @@
         //   // Update the y location.
         //   y += 1;
         // }
+
+      // 8) Advanced exercise 1) and Advanced exercise 2)
+          // pizza.draw();
+          pizza.displacement(xMin, yMin, xMax, yMax);
 
         window.requestAnimationFrame(repeatme);
       } // repeatme
