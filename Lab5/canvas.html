@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Canvas</title>
+
+    <style type="text/css">
+	
+    </style>
+
+  </head>
+
+  <body>
+
+    <canvas id="canvasOne"></canvas>
+	
+	<div id="demo"></div>
+
+    <script type="text/javascript">
+		// Gets a handle to the element with id canvasOne.
+		var canvas = document.getElementById("canvasOne");
+		// Set the canvas up for drawing in 2D.
+		var ctx = canvas.getContext("2d");
+
+		// Lab5 Excercises
+		// 1)
+		function init() {
+			canvas.width = 1220;
+			canvas.height = 600;
+			canvas.style.border = "solid 1px black";
+		}
+
+		init();
+
+		// 2)
+		class Ball {
+
+		// 3)
+			constructor(x, y, r, xVel, yVel, mass) {
+				this.xpos = x;
+				this.ypos = y;
+				this.r = r;
+				this.xVel = xVel;
+				this.yVel = yVel;
+				this.mass = mass;
+				this.colour = "rgb(0, 0, 0)";
+			}
+
+			// colour = "0, 0, 0";
+			// startAngle = 0;
+			// gravity = 0.1;
+			// fac = 0.8;
+
+		// 4)
+			resize(radius) {
+				this.r = radius;
+			};
+
+			draw() {
+				var prevAngle = 0;
+				
+				// Paint the whole circle and fill it with orange 
+				ctx.beginPath();
+				ctx.arc(this.xpos, this.ypos, this.r, 0, 2*Math.PI, true);
+				this.setColour(this.colour);
+
+				// Paint seven slices, calling the 'rotate' method
+				this.rotate(this.startAngle);
+
+				// Paint the inner circle, this radius is a fraction of the pizza radius
+				ctx.arc(this.xpos, this.ypos, this.r*0.93, 0, 2*Math.PI, true);
+				ctx.stroke();
+			};
+
+			rotate(startAngle) {
+				var prevAngle = startAngle;
+
+				// Paint seven slices shifting from a start angle 
+				ctx.beginPath();
+				for (var i = startAngle; i < 2*Math.PI + startAngle; i += (2/7)*Math.PI ) {
+					// if ( this.xSpeed < 0 || this.ySpeed < 0 ) {
+					//   ctx.arc(this.xpos, this.ypos, this.r, prevAngle, i, false);
+					// } else {
+					ctx.arc(this.xpos, this.ypos, this.r, prevAngle, i, true);
+					// }
+					ctx.lineTo(this.xpos, this.ypos);
+					ctx.stroke();
+
+					// Save the current angle so it will be the starting point of the next arc 
+					prevAngle = i;
+				}
+			};
+
+			setColour(colour) {
+				ctx.fillStyle = colour;
+				ctx.fill();
+			};
+
+			// 5)
+			move() {
+				this.xpos += this.xVel;
+				this.ypos += this.yVel;
+
+			// 7) Wall collision detection
+			  if( this.xpos + this.r >= canvas.width || this.xpos - this.r <= 0 ) {
+					this.xVel = -this.xVel;
+				}
+
+			 if( this.ypos + this.r >= canvas.height || this.ypos - this.r <= 0 ) {
+					this.yVel = -this.yVel;
+				}
+
+			};
+
+				// this.contains = function(xPoint, yPoint) {
+				// 	// Pythagoras to measure the distance between your point and the centre and see if it's lower than the radius 
+				// 	if ( Math.pow(xPoint - this.xpos, 2) + Math.pow(yPoint - this.ypos, 2) <= Math.pow(this.r, 2) ) {
+				// 		return true;
+				// 	}
+				// 	return false;
+				// };
+
+			// 9)
+			intersects(otherBall) {
+				// Pythagoras to measure the distance between the centre and the otherBall's centre and see if it's lower than the sum of the radius 
+				if ( Math.sqrt(Math.pow(otherBall.xpos - this.xpos, 2) + Math.pow(otherBall.ypos - this.ypos, 2)) <= otherBall.r + this.r ) {
+					return true;
+				}
+				return false;
+			};
+
+				// // 8)
+				// this.displacement = function(xMin, yMin, xMax, yMax) {
+				// 	this.ySpeed += gravity;
+				// 	this.move(this.xSpeed, this.ySpeed);
+
+				// 	// Advanced exercise 1)
+				// 	if ( xSpeed < 0 || ySpeed < 0 ) {
+				// 		this.draw(this.startAngle -= Math.PI/4);
+				// 	} else {
+				// 		this.draw(this.startAngle += Math.PI/6);
+				// 	}
+
+				// 	if ( this.ypos > yMax || this.ypos < yMin ) {
+				// 			this.ySpeed *= -1*fac;
+				// 		}
+
+				// 	if ( this.xpos > xMax || this.xpos < xMin ) {
+				// 		this.xSpeed *= -1 ;
+				// 	}
+				// }
+			} // Ball constructor
+
+
+		// 3)
+		ball1 = new Ball(10, 10, 10, 5, 5, 30);
+		// ball1.draw();
+
+		// 8)
+		ball2 = new Ball(100, 100, 30, 4, 4, 80);
+		ball2.colour = "red";
+
+
+		// 6)
+		function step() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ball1.draw();
+			ball1.move();
+
+			ball2.draw();
+			ball2.move();
+
+		// 9)
+			if ( ball1.intersects(ball2) ) {
+				console.log("ball1 and ball2 have collided.");
+			}
+			requestAnimationFrame(step);
+		}
+
+		step();
+
+    </script>
+
+  </body>
+
+</html>
