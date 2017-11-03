@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <!-- 1) Create this HTML file -->
+    <head>
+        <title>SVG Graphics</title>
+        <meta charset="UTF-8">
+
+        <style type="text/css">
+            /* 8) Circle fill with CSS */
+            circle {
+                fill: purple;
+            }
+        </style>
+
+    </head>
+    <body>
+        <!-- 2) Insert SVG tags -->
+        <svg width="1200" height="600" style="border: solid 1px black">
+            <!-- 3) Circle -->
+            <!-- <circle cx="100" cy="100" r="20" fill="purple" /> -->
+
+            <!-- 4) Rectangle -->
+            <rect width="100" height="200" x="10" y="10" style="fill:blue" />
+
+            <!-- 5) Text -->
+            <text x="50" y="50" style="font-size: 24px; fill:orange">Javier</text>
+
+            <!-- 6) Circle opacity -->
+            <!-- <circle cx="100" cy="100" r="20" fill="purple" style="fill-opacity: 0.5"/> -->
+
+            <!-- 7) Circle stroke -->
+            <!-- <circle cx="100" cy="100" r="20" fill="purple" stroke="black" style="fill-opacity: 0.5"/> -->
+
+            <!-- 8) Circle fill with CSS -->
+            <circle cx="100" cy="100" r="20" stroke="black" style="fill-opacity: 0.5"/>
+
+            <!-- Advanced exercise 1) Draw Pacman with SVG -->
+            <path d="M 250 100
+                     A 45 45, 0, 1, 1, 295 145
+                     L 295 100 Z"
+                     transform="rotate(225 295 100)"
+                     stroke="black" fill="yellow" />
+        </svg>
+        <script type="text/javascript">
+            // Advanced exercise 2) Move circle
+            var circle = document.getElementsByTagName("circle")[0];
+            
+            function moveCircle() {
+                circle.setAttribute("cx", "120");
+                circle.setAttribute("cy", "120");
+            }
+
+            function fillCircle() {
+                circle.style.fill = "green";
+            }
+
+            setTimeout(moveCircle, 1000);
+            setTimeout(fillCircle, 2000);
+        </script>
+    </body>
+</html>
