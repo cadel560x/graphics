@@ -104,11 +104,11 @@
 				this.ypos += this.yVel;
 
 			// 7) Wall collision detection
-			  if( this.xpos + this.r >= canvas.width || this.xpos - this.r <= 0 ) {
+			  	if( this.xpos + this.r >= canvas.width || this.xpos - this.r <= 0 ) {
 					this.xVel = -this.xVel;
 				}
 
-			 if( this.ypos + this.r >= canvas.height || this.ypos - this.r <= 0 ) {
+			 	if( this.ypos + this.r >= canvas.height || this.ypos - this.r <= 0 ) {
 					this.yVel = -this.yVel;
 				}
 
@@ -175,6 +175,11 @@
 		// 9)
 			if ( ball1.intersects(ball2) ) {
 				console.log("ball1 and ball2 have collided.");
+				ball1.xVel = -ball1.xVel;
+				ball1.yVel = -ball1.yVel;
+
+				// ball2.xVel = -ball2.xVel;
+				// ball2.yVel = -ball2.yVel;
 			}
 			requestAnimationFrame(step);
 		}
