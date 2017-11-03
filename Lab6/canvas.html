@@ -21,7 +21,8 @@
 
 		    init();
 
-            // 3) Create a pacman
+                
+            // 3) Class 'Position' used for creating a 'Pacman' object
             class Position {
                 constructor(x, y) {
                     this.x = x;
@@ -29,28 +30,79 @@
                 }
             } // Position class
 
-            class Pacman {
+            // Advanced exercise 1) Class 'Circle' used for 'Pacman's eye
+            class Circle {
                 constructor(x, y, r, color) {
-                    this.position = new Position(x, y, color);
+                    this.center = new Position(x, y);
                     this.radius = r;
                     this.color = color;
                 }
 
                 draw() {
                     ctx.beginPath();
-			        ctx.arc(this.position.x, this.position.y, this.radius, 1.75*Math.PI, 0.25*Math.PI, true);
-			        ctx.lineTo(this.position.x, this.position.y);
-			        ctx.lineTo(this.position.x + (this.radius * Math.cos(0.25*Math.PI)), this.position.y + (this.radius * Math.sin(1.75*Math.PI)));
+                    ctx.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
+                    if (this.color != "-1" ) { // If 'color' has been set, fill the circle
+                        ctx.fillStyle = this.color;
+                        ctx.fill();
+                    }
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+
+            // 3) Class for drawing a 'Pacman' using object composition with class 'Position'
+            class Pacman {
+                constructor(x, y, r, color) {
+                    this.radius = r;
+                    this.color = color;
+                    this.center = new Position(x, y);
+
+                    // Eye's center is located horizontally at a 20% of the radius and vertically at a 60% of 'this.radius'
+                    // Eye's radius is 12% of 'this.radius'
+                    this.eye = new Circle( (this.center.x + this.radius)*0.20, (this.center.y  - this.radius)*0.60, this.radius*0.12, "white");
+
+                    // Pupil's center is located horizontally at a 20% of the radius and vertically at a 60% of 'this.radius'
+                    // Pupil's radius is 4% of 'this.radius'
+                    this.pupil = new Circle( (this.center.x + this.radius)*0.20, (this.center.y  - this.radius)*0.60, this.radius*0.04, "black");
+                }
+
+                draw() {
+                    // 3) 'draw()' 'Pacman'
+                    // ctx.beginPath();
+			        // ctx.arc(this.center.x, this.center.y, this.radius, 1.75*Math.PI, 0.25*Math.PI, true);
+			        // ctx.lineTo(this.center.x, this.center.y);
+			        // ctx.lineTo(this.center.x + (this.radius * Math.cos(0.25*Math.PI)), this.center.y + (this.radius * Math.sin(1.75*Math.PI)));
+                    // ctx.lineWidth = 3; // Advanced exercise 1) Outline (stroke) 'Pacman'
+			        // ctx.stroke();
+			        // ctx.fillStyle = this.color;
+			        // ctx.fill();
+
+                    // Advanced exercise 1) Outline (stroke) 'Pacman'
+                    this.drawBody();
+                    this.eye.draw();
+                    this.pupil.draw();
+                }
+
+                // Advanced exercise 1) 'Pacman' body
+                drawBody() {
+                    ctx.beginPath();
+			        ctx.arc(this.center.x, this.center.y, this.radius, 1.75*Math.PI, 0.25*Math.PI, true);
+			        ctx.lineTo(this.center.x, this.center.y);
+			        ctx.lineTo(this.center.x + (this.radius * Math.cos(0.25*Math.PI)), this.center.y + (this.radius * Math.sin(1.75*Math.PI)));
+                    ctx.lineWidth = 3; // Outline (stroke) 'Pacman'
 			        ctx.stroke();
 			        ctx.fillStyle = this.color;
 			        ctx.fill();
                 }
+
             } // Pacman class
 
-            // 3)
+            // 3) A 'Pacman' object
             var pacman1 = new Pacman(0, 0, 50, "yellow");
 
-            // 4)
+
+            // 4) Function for clearing the canvas.
             function clear() {
                 ctx.save();
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -58,18 +110,37 @@
                 ctx.restore();
             }
 
-            // 6) Set the global variable nosteps to 0 and initial translation
+
+            // 6) Set the global variable 'nosteps' to '0'
             var nosteps = 0;
+
+            // Advanced exercise 3) 'Rotation' text
+            var scale = 1;
+            var textFlag = false;
+
+            // 6) Initial translation
             ctx.translate(70, 70);
+
 
             // 5) Animation using 'repeatme()' function
             function repeatme() {
-                clear();                
+                clear();
+
+                // Advanced exercise 2) Grid
+                grid();
+
+                // Advanced exercise 3) 'Rotation' text
+                if (textFlag == true) {
+                    rotationText();
+                }
+
+                // 5) Draw Pacman
                 pacman1.draw();
 
                 nosteps++;
                 // 5) Translates the context by (1,0)
                 // ctx.translate(1, 0);
+
 
                 //  8) Translate using ctx.transform()
                 //     e = 1
@@ -83,6 +154,7 @@
                     // 5) Rotates by π/2 radians
                     // ctx.rotate(Math.PI/2);
 
+
                     //  9) Translate using ctx.transform()
                     //     a = cos( π/2 ) = 0
                     //     b = sin( π/2 ) = 1
@@ -91,14 +163,57 @@
                     //     e = 0
                     //     f = 0
                     ctx.transform(0, 1, -1, 0, 0, 0);
+
+                    // Advanced exercise 3) 'Rotation' text
+                    textFlag = true;
+                    setTimeout(function() { // This anonymous function will stop 'Rotation' text display after 0.5 seconds
+                        textFlag = false;
+                        scale ++;            // This variable will increase the scale after a rotation has been made
+                        // console.log(scale);
+                    }, 500); 
                 }
-                
                 
                 requestAnimationFrame(repeatme);
             }
 
+
             // 7) Start animation by calling the 'repeatme()' function.
             repeatme();
+
+            // Advanced exercise 2) Grid
+            function grid() {
+                ctx.save();
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+                for (var x = 0.5; x < canvas.width; x += 10) {
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                }
+
+                for (var y = 0.5; y < canvas.height; y += 10) {
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                }
+
+                ctx.strokeStyle = "red";
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            // Advanced exercise 3) 'Rotation' text
+            function rotationText() {
+                ctx.save();
+                ctx.setTransform(scale, 0, 0, scale, 0, 0); // 'scale' is a global variable incremented by the anonymous function defined above in 'setTimeout'
+
+                // Every time the scale is incremented, the coordinate system also scales up.
+                // Let's say that if the coordinate system was 300x300. After a scale up by 2, the coordinate system is now 600x600.
+                // Thus, the center of the canvas is not at (150, 150), now the center is at (300, 300). That is why we
+                // have to correct the half of the coordinate system by (2*scale).
+                ctx.fillText("Rotation", canvas.width/(2*scale), canvas.height/(2*scale));
+
+                ctx.restore();
+            }
 
         </script>
     </body>
