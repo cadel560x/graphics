@@ -58,28 +58,46 @@
                 ctx.restore();
             }
 
-            // 6)
+            // 6) Set the global variable nosteps to 0 and initial translation
             var nosteps = 0;
             ctx.translate(70, 70);
 
-            // 5)
+            // 5) Animation using 'repeatme()' function
             function repeatme() {
                 clear();                
                 pacman1.draw();
 
                 nosteps++;
-                ctx.translate(1, 0);
+                // 5) Translates the context by (1,0)
+                // ctx.translate(1, 0);
 
+                //  8) Translate using ctx.transform()
+                //     e = 1
+                //     f = 0
+                ctx.transform(1, 0, 0, 1, 1, 0);
+
+                // 5) Rotates by π/2 radians every 400 steps.
                 if (nosteps == 400) {
                     nosteps = 0;
 
-                    ctx.rotate(Math.PI/2);
+                    // 5) Rotates by π/2 radians
+                    // ctx.rotate(Math.PI/2);
+
+                    //  9) Translate using ctx.transform()
+                    //     a = cos( π/2 ) = 0
+                    //     b = sin( π/2 ) = 1
+                    //     c = -sin( π/2 ) = -1
+                    //     d = cos( π/2 ) = 0
+                    //     e = 0
+                    //     f = 0
+                    ctx.transform(0, 1, -1, 0, 0, 0);
                 }
                 
                 
                 requestAnimationFrame(repeatme);
             }
 
+            // 7) Start animation by calling the 'repeatme()' function.
             repeatme();
 
         </script>
