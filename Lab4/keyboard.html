@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html>
+
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+  <head>
+    <meta charset="UTF-8">
+    <title>Canvas</title>
+
+    <style type="text/css">
+		canvas {
+			border: 1px solid grey; 
+		}
+    </style>
+
+  </head>
+
+  <body>
+
+    <canvas id="canvas-for-ball"></canvas>
+
+		<script type="text/javascript">
+		// Gets a handle to the element with id canvasOne.
+		var canvas = document.getElementById("canvas-for-ball");
+		// Get a 2D context for the canvas.
+		var ctx = canvas.getContext("2d");
+		// Make the fill style red.
+		ctx.fillStyle = "rgb(255, 0, 0)";
+
+		// 7) Create an object with the left, top positions of the canvas
+		var canvasPosition = {
+        x: canvas.offsetLeft,
+        y: canvas.offsetTop
+      }
+
+		// 7) Add an event listner for clicks in the canvas
+		canvas.addEventListener("click", function(event) { 
+			// 7) Create a 'mouse' object with the real mouse position
+			var mouse = {
+				x: event.clientX - canvasPosition.x,
+				y: event.clientY - canvasPosition.y
+			}
+
+			// 7) Move 'ball1' to the new coordinates
+			// ball1.xpos = mouse.x;
+			// ball1.ypos = mouse.y;
+
+			// 8) Move 'pizza1' to the new coordinates
+			pizza1.ball.xpos = mouse.x;
+			pizza1.ball.ypos = mouse.y;
+		});
+
+		// Add a Javascript event listener to the keypress event.
+		window.addEventListener("keypress", function(event) { 
+			// Just log the event to the console.
+			console.log(event);
+		});
+
+		//keypresses with jQuery
+		$(document.body).on('keydown', function(e) {
+			console.log(e.which);
+			switch (e.which) {
+			// key code for left arrow
+			case 37:
+				console.log('left arrow key pressed!');
+				// 5) Decrease 'ball1' xVel
+				// ball1.xVel -= 1;
+
+				// 8) Decrease 'pizza1' xVel
+				pizza1.ball.xVel -= 1;
+				break;
+				
+			// 5) Increase 'ball1' yVel when up arrow key is pressed
+			case 38:
+				// ball1.yVel += 1;
+				// break;
+
+				// 8) Increase 'pizza1' yVel when up arrow key is pressed
+				pizza1.ball.yVel += 1;
+				break;
+
+			// key code for right arrow
+			case 39:
+				console.log('right arrow key pressed!');
+				// 5) Increase 'ball1' xVel
+				// ball1.xVel += 1;
+				// break;
+
+				// 8) Increase 'pizza1' xVel
+				pizza1.ball.xVel += 1;
+				break;
+
+			// 5) Decrease 'ball1' yVel when down arrow key is pressed
+			case 40:
+				// ball1.yVel -= 1;
+				// break;
+
+				// 8) Decrease 'pizza1' yVel when down arrow key is pressed
+				pizza1.ball.yVel -= 1;
+				break;
+			}
+		});
+
+		// 3) 'Ball' class
+		class Ball {
+
+			constructor(x, y, r, xVel, yVel) {
+				this.xpos = x;
+				this.ypos = y;
+				this.radius = r;
+				this.xVel = xVel;
+				this.yVel = yVel;
+				this.colour = "rgb(0, 0, 0)";
+			}
+
+			resize(radius) {
+				this.radius = radius;
+			}
+
+			draw() {			
+				// Paint the whole circle and fill it
+				ctx.beginPath();
+				ctx.arc(this.xpos, this.ypos, this.radius, 0, 2*Math.PI, true);
+				this.setColour();
+
+				ctx.stroke();
+			}
+
+			rotate(startAngle) {
+				var prevAngle = startAngle;
+
+				// Paint seven slices shifting from a start angle 
+				ctx.beginPath();
+				for (var i = startAngle; i < 2*Math.PI + startAngle; i += (2/7)*Math.PI ) {
+					ctx.arc(this.xpos, this.ypos, this.radius, prevAngle, i, true);
+					ctx.lineTo(this.xpos, this.ypos);
+					ctx.stroke();
+
+					// Save the current angle so it will be the starting point of the next arc 
+					prevAngle = i;
+				}
+			}
+
+			setColour() {
+				ctx.fillStyle = this.colour;
+				ctx.fill();
+			}
+
+			move() {
+				this.xpos += this.xVel;
+				this.ypos += this.yVel;
+
+				// 6) Wall collision detection
+			  if( this.xpos + this.radius >= canvas.width || this.xpos - this.radius <= 0 ) {
+					this.xVel = -this.xVel;
+				}
+			 	if( this.ypos + this.radius >= canvas.height || this.ypos - this.radius <= 0 ) {
+					this.yVel = -this.yVel;
+				}
+
+			}
+
+			// 10) For collision detection
+			intersects(otherBall) {
+				// Pythagoras to measure the distance between the centre and the otherBall's centre and see if it's lower than the sum of the radius 
+				if ( Math.sqrt(Math.pow(otherBall.xpos - this.xpos, 2) + Math.pow(otherBall.ypos - this.ypos, 2)) <= otherBall.radius + this.radius ) {
+					return true;
+				}
+				return false;
+			}
+		} // 'Ball' class
+
+
+		ball1 = new Ball(10, 10, 10, 5, 5, 30);
+
+		// 6) 'step()' animation function
+		function step() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			// ball1.draw();
+			// ball1.move();
+
+			// 8) Animate pizza1
+			pizza1.draw();
+			pizza1.move();
+
+			// 9) Animate pizza2
+			pizza2.draw();
+			pizza2.move();
+
+			// 10) Ball collision detection
+			if ( pizza1.ball.intersects(pizza2.ball) ) {
+				console.log("ball1 and ball2 have collided.");
+			}
+
+			requestAnimationFrame(step);
+		} // 'step' function		
+
+		// 8) Creating 'Pizza' class, it has a 'Ball' instance
+		class Pizza {
+			constructor(x, y, r, xVel, yVel, mass, colour) {
+				this.ball = new Ball(x, y, r, xVel, yVel, mass);
+				this.ball.colour = colour;
+				this.rotationAngle = 0;
+			}
+
+			move() { // Delegate method
+				this.ball.move();
+			}
+
+			draw() {
+				// Paint the whole circle and fill it
+				this.ball.draw();
+				
+				// Paint seven slices, calling the 'rotate' method
+				this.ball.rotate(this.rotationAngle);
+
+				// Paint the inner circle, this radius is a fraction of the pizza radius
+				ctx.beginPath();
+				ctx.arc(this.ball.xpos, this.ball.ypos, this.ball.r*0.93, 0, 2*Math.PI, true);
+				ctx.stroke();
+			}
+		} // 'Pizza' class
+
+		var pizza1 = new Pizza(70, 70, 30, 4, 4, 80, "orange");
+		var pizza2 = new Pizza(170, 50, 20, 4, 4, 80, "orange");
+
+		step();
+    </script>
+
+  </body>
+
+</html>
