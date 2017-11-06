@@ -111,6 +111,7 @@
 				this.xVel = xVel;
 				this.yVel = yVel;
 				this.colour = "rgb(0, 0, 0)";
+				this.rotationWay = true;
 			}
 
 			resize(radius) {
@@ -132,7 +133,7 @@
 				// Paint seven slices shifting from a start angle 
 				ctx.beginPath();
 				for (var i = startAngle; i < 2*Math.PI + startAngle; i += (2/7)*Math.PI ) {
-					ctx.arc(this.xpos, this.ypos, this.radius, prevAngle, i, true);
+					ctx.arc(this.xpos, this.ypos, this.radius, prevAngle, i, this.rotationWay);
 					ctx.lineTo(this.xpos, this.ypos);
 					ctx.stroke();
 
@@ -153,9 +154,11 @@
 				// 6) Wall collision detection
 			  if( this.xpos + this.radius >= canvas.width || this.xpos - this.radius <= 0 ) {
 					this.xVel = -this.xVel;
+					this.rotationWay = !this.rotationWay;
 				}
 			 	if( this.ypos + this.radius >= canvas.height || this.ypos - this.radius <= 0 ) {
 					this.yVel = -this.yVel;
+					this.rotationWay = !this.rotationWay;
 				}
 
 			}
@@ -170,8 +173,10 @@
 			}
 		} // 'Ball' class
 
-
 		ball1 = new Ball(10, 10, 10, 5, 5, 30);
+
+		// Advanced exercise 1) 'numberSteps' is to control the rotation of the pizza
+		var numberSteps = 0;
 
 		// 6) 'step()' animation function
 		function step() {
@@ -192,6 +197,26 @@
 				console.log("ball1 and ball2 have collided.");
 			}
 
+			// Advanced exercise 1)
+			if ( numberSteps % pizza1.angularVel == 0 ) {
+				pizza1.rotationAngle += Math.PI/12;
+
+				// Reset the rotation angle
+				if ( pizza1.rotationAngle >= 2*Math.PI ) {
+					pizza1.rotationAngle = 0;
+				}
+			}
+
+			if ( numberSteps % pizza2.angularVel == 0 ) {
+				pizza2.rotationAngle += Math.PI/12;
+
+				// Reset the rotation angle
+				if ( pizza2.rotationAngle >= 2*Math.PI ) {
+					pizza2.rotationAngle = 0;
+				}
+			}
+
+			numberSteps++;
 			requestAnimationFrame(step);
 		} // 'step' function		
 
@@ -201,6 +226,7 @@
 				this.ball = new Ball(x, y, r, xVel, yVel, mass);
 				this.ball.colour = colour;
 				this.rotationAngle = 0;
+				this.angularVel = 10;
 			}
 
 			move() { // Delegate method
