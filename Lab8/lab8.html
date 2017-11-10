@@ -63,43 +63,45 @@
                 }
 
                 // 14) Slow color change
-                hexColor = material.color.getHex() + 0x101010;
+                // hexColor = material.color.getHex() + 0x101010;
                 if (noSteps < 500) {
                     // console.log("material color:", material.color);
-                    console.log("hexColor +: ", hexColor.toString(2));
+                    // console.log("hexColor +: ", hexColor.toString(2));
+                    console.log("hexColor +: ", material.color.getHex().toString(16));
                 }
 
-                hexColor = hexColor & 0x000000111111;
+                // hexColor = hexColor & 0x000000111111;
                 
-                if (noSteps < 500) {
-                    // console.log("material color:", material.color);
-                    console.log("hexColor and: ", hexColor.toString(2));
-                }
+                // if (noSteps < 500) {
+                //     // console.log("material color:", material.color);
+                //     console.log("hexColor and: ", hexColor.toString(2));
+                // }
 
-                hexColor = hexColor | 0xF000F;
+                // hexColor = hexColor | 0xF000F;
                 
-                if (noSteps < 500) {
-                    // console.log("material color:", material.color);
-                    console.log("hexColor or: ", hexColor.toString(2));
-                }
+                // if (noSteps < 500) {
+                //     // console.log("material color:", material.color);
+                //     console.log("hexColor or: ", hexColor.toString(2));
+                // }
 
-                material.color.setHex(hexColor);
+                material.color.addScalar(0.063);
+                // material.color.setHex(hexColor);
 
                 // if (material.color.getHex() > 0xffffff ) {
                 //     material.color.setHex(0x000000);
                 // }
 
-                // if (material.color.r > 1 ) {
-                //     material.color.r = 0;
-                // }
+                if (material.color.r > 1 ) {
+                    material.color.r = 0.5;
+                }
 
-                // if (material.color.g > 1 ) {
-                //     material.color.g = 0;
-                // }
+                if (material.color.g > 1 ) {
+                    material.color.g = 0;
+                }
 
-                // if (material.color.b > 1 ) {
-                //     material.color.b = 0;
-                // }
+                if (material.color.b > 1 ) {
+                    material.color.b = 0.5;
+                }
 
                 noSteps++;
 
