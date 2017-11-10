@@ -14,7 +14,7 @@
             var scene = new THREE.Scene();
 
             // 4) Creating and adding a sphere
-            var geometry = new THREE.SphereGeometry(5, 32, 32);
+            var geometry = new THREE.SphereGeometry(12, 32, 32);
 
             // 9) 'wireframe: true'
             // var material = new THREE.MeshBasicMaterial({color: 0xff00ff, wireframe: true});
@@ -23,26 +23,40 @@
             // var material = new THREE.MeshBasicMaterial({color: 0xff00ff});
 
             // 12) Change of material to 'MeshLambertMaterial'
-            var material = new THREE.MeshLambertMaterial({color: 0xff00ff});         
-            
+            var material = new THREE.MeshLambertMaterial({color: 0xff00ff});  
             var sphere = new THREE.Mesh(geometry, material);
+
+            // Advanced exercise 1)
+            sphere.castShadow = true;       
+            
+            
             scene.add(sphere);
 
             // 5) Add a camera
             var camera = new THREE.PerspectiveCamera(80, window.innerWidth/window.innerHeight, 0.1, 1000);
-            camera.position.z = 55;
+            camera.position.z = 40;
 
             // 6) Add a renderer
             var renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Advanced exercise 1)
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
             document.body.appendChild(renderer.domElement);
 
             // 13) 'speed' vector used to alternate movement once the bounds are reached
             var speedSense = 1;
             var speedMagnitud = 0.4
 
-            var noSteps = 0;
+            // For debugging
+            // var noSteps = 0;
+
+            // 14) Color variables
             var hexColor = sphere.material.color.getHex();
+            var colorStep = 0x0;
+            var colorSense = 1;
 
             // 7) Render loop
             function repeatMe() {
@@ -50,7 +64,7 @@
                 sphere.rotateX(Math.PI/180);
                 sphere.rotateY(Math.PI/180);
 
-                // 13) Movieng the sphere with 'translate'
+                // 14) Movieng the sphere with 'translate'
                 // sphere.translateX(1);
                 // sphere.translateY(1);
 
@@ -58,52 +72,67 @@
                 // The 'position' property has three properties: 'x', 'y' and 'z'
                 sphere.position.x += speedMagnitud*speedSense;
 
-                if (sphere.position.x < -80 || sphere.position.x > 80) {
+                if (sphere.position.x < -39 || sphere.position.x > 38) {
                     speedSense *= -1;
                 }
 
-                // 14) Slow color change
-                // hexColor = material.color.getHex() + 0x101010;
-                if (noSteps < 500) {
-                    // console.log("material color:", material.color);
-                    // console.log("hexColor +: ", hexColor.toString(2));
-                    console.log("hexColor +: ", material.color.getHex().toString(16));
-                }
+                // 15) Slow color change
+                hexColor = material.color.getHex();
+                hexColor += colorStep*colorSense;
+                material.color.setHex(hexColor);
 
-                // hexColor = hexColor & 0x000000111111;
-                
-                // if (noSteps < 500) {
-                //     // console.log("material color:", material.color);
-                //     console.log("hexColor and: ", hexColor.toString(2));
-                // }
 
-                // hexColor = hexColor | 0xF000F;
-                
-                // if (noSteps < 500) {
-                //     // console.log("material color:", material.color);
-                //     console.log("hexColor or: ", hexColor.toString(2));
-                // }
-
-                material.color.addScalar(0.063);
-                // material.color.setHex(hexColor);
-
-                // if (material.color.getHex() > 0xffffff ) {
-                //     material.color.setHex(0x000000);
-                // }
-
-                if (material.color.r > 1 ) {
-                    material.color.r = 0.5;
+                // Correct value overflows
+                if (material.color.r > 1) {
+                    material.color.r = 1;
+                } else if (material.color.r < 0) {
+                    material.color.r = 0;
                 }
 
                 if (material.color.g > 1 ) {
+                    material.color.g = 1;
+                } else if (material.color.g < 0) {
                     material.color.g = 0;
                 }
 
                 if (material.color.b > 1 ) {
-                    material.color.b = 0.5;
+                    material.color.b = 1;
+                } else if (material.color.b < 0) {
+                    material.color.b = 0;
                 }
 
-                noSteps++;
+                if (material.color.getHex() == 0xff00ff ) {
+                    colorStep = 0x000001;
+                    colorSense *= -1;
+                }
+
+                if (material.color.getHex() == 0xff0000 ) {
+                    colorStep = 0x000100;
+                    colorSense *= -1;
+                }
+
+                if (material.color.getHex() == 0xffff00 ) {
+                    colorStep = 0x010000;
+                    colorSense *= -1;
+                }
+
+                if (material.color.getHex() == 0x00ff00 ) {
+                    colorStep = 0x000001;
+                    colorSense *= -1;
+                }
+
+                if (material.color.getHex() == 0x00ffff ) {
+                    colorStep = 0x000100;
+                    colorSense *= -1;
+                }
+
+                if (material.color.getHex() == 0x0000ff ) {
+                    colorStep = 0x010000;
+                    colorSense *= -1;
+                }
+
+                // For debugging
+                // noSteps++;
 
                 requestAnimationFrame(repeatMe);
             }
@@ -111,10 +140,21 @@
             // 11) Directional light
             var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
             directionalLight.position.set(0, 1, 2);
+            // Advanced exercise 1)
+            directionalLight.castShadow = true;
             scene.add(directionalLight);
 
-            console.log("hexColor: ", hexColor.toString(16));
-            // sphere.material.color.setHex(0);
+            // Advanced exercise 1)
+            var planeGeometry = new THREE.PlaneGeometry( 85, 50, 32 );
+            var planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff}); 
+            var plane = new THREE.Mesh( planeGeometry, planeMaterial );
+            plane.receiveShadow = true;
+            scene.add( plane );
+
+            var spotLight = new THREE.SpotLight(0xffffff);
+            spotLight.position.set( 100, 100, 100);
+            spotLight.castShadow = true;
+            scene.add(spotLight);
 
             // 7) Call render loop
             repeatMe();
