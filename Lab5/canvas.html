@@ -13,7 +13,9 @@
   </head>
 
   <body>
+	<!-- Lab 5 exercises -->
 
+	<!-- 1) Add 'canvas' element -->
     <canvas id="canvasOne"></canvas>
 	
 	<div id="demo"></div>
@@ -24,8 +26,7 @@
 		// Set the canvas up for drawing in 2D.
 		var ctx = canvas.getContext("2d");
 
-		// Lab5 Excercises
-		// 1)
+		// 2) 'init()' function for canvas element
 		function init() {
 			canvas.width = 1220;
 			canvas.height = 600;
@@ -34,158 +35,255 @@
 
 		init();
 
-		// 2)
+		// 3) Class 'Ball'
 		class Ball {
 
-		// 3)
 			constructor(x, y, r, xVel, yVel, mass) {
 				this.xpos = x;
 				this.ypos = y;
-				this.r = r;
+				this.radius = r;
 				this.xVel = xVel;
 				this.yVel = yVel;
 				this.mass = mass;
 				this.colour = "rgb(0, 0, 0)";
 			}
 
-			// colour = "0, 0, 0";
-			// startAngle = 0;
-			// gravity = 0.1;
-			// fac = 0.8;
-
-		// 4)
+			// 4) 'resize(radius)' method
 			resize(radius) {
-				this.r = radius;
-			};
+				this.radius = radius;
+			}
 
-			draw() {
-				var prevAngle = 0;
-				
-				// Paint the whole circle and fill it with orange 
+			// 4) 'draw()' method
+			draw() {			
+				// Paint the whole circle and fill it
 				ctx.beginPath();
-				ctx.arc(this.xpos, this.ypos, this.r, 0, 2*Math.PI, true);
-				this.setColour(this.colour);
+				ctx.arc(this.xpos, this.ypos, this.radius, 0, 2*Math.PI, true);
+				this.setColour();
 
-				// Paint seven slices, calling the 'rotate' method
-				this.rotate(this.startAngle);
-
-				// Paint the inner circle, this radius is a fraction of the pizza radius
-				ctx.arc(this.xpos, this.ypos, this.r*0.93, 0, 2*Math.PI, true);
 				ctx.stroke();
-			};
+			}
 
+			// 4) 'rotate(startAngle)' method
 			rotate(startAngle) {
 				var prevAngle = startAngle;
 
 				// Paint seven slices shifting from a start angle 
 				ctx.beginPath();
 				for (var i = startAngle; i < 2*Math.PI + startAngle; i += (2/7)*Math.PI ) {
-					// if ( this.xSpeed < 0 || this.ySpeed < 0 ) {
-					//   ctx.arc(this.xpos, this.ypos, this.r, prevAngle, i, false);
-					// } else {
-					ctx.arc(this.xpos, this.ypos, this.r, prevAngle, i, true);
-					// }
+					ctx.arc(this.xpos, this.ypos, this.radius, prevAngle, i, true);
 					ctx.lineTo(this.xpos, this.ypos);
 					ctx.stroke();
 
 					// Save the current angle so it will be the starting point of the next arc 
 					prevAngle = i;
 				}
-			};
+			}
 
-			setColour(colour) {
-				ctx.fillStyle = colour;
+			// 4) 'setColour(colour)' method
+			setColour() {
+				ctx.fillStyle = this.colour;
 				ctx.fill();
-			};
+			}
 
-			// 5)
+			// 5) 'move()' function that steps the position according to the velocity
 			move() {
 				this.xpos += this.xVel;
 				this.ypos += this.yVel;
 
-			// 7) Wall collision detection
-			  	if( this.xpos + this.r >= canvas.width || this.xpos - this.r <= 0 ) {
+				// 7) Wall collision detection
+			  	if( this.xpos + this.radius >= canvas.width || this.xpos - this.radius <= 0 ) {
 					this.xVel = -this.xVel;
 				}
-
-			 	if( this.ypos + this.r >= canvas.height || this.ypos - this.r <= 0 ) {
+			 	if( this.ypos + this.radius >= canvas.height || this.ypos - this.radius <= 0 ) {
 					this.yVel = -this.yVel;
 				}
 
-			};
+			}
 
-				// this.contains = function(xPoint, yPoint) {
-				// 	// Pythagoras to measure the distance between your point and the centre and see if it's lower than the radius 
-				// 	if ( Math.pow(xPoint - this.xpos, 2) + Math.pow(yPoint - this.ypos, 2) <= Math.pow(this.r, 2) ) {
-				// 		return true;
-				// 	}
-				// 	return false;
-				// };
-
-			// 9)
+			// 9) Ball collision detection
 			intersects(otherBall) {
 				// Pythagoras to measure the distance between the centre and the otherBall's centre and see if it's lower than the sum of the radius 
-				if ( Math.sqrt(Math.pow(otherBall.xpos - this.xpos, 2) + Math.pow(otherBall.ypos - this.ypos, 2)) <= otherBall.r + this.r ) {
+				if ( Math.sqrt(Math.pow(otherBall.xpos - this.xpos, 2) + Math.pow(otherBall.ypos - this.ypos, 2)) <= otherBall.radius + this.radius ) {
 					return true;
 				}
 				return false;
-			};
-
-				// // 8)
-				// this.displacement = function(xMin, yMin, xMax, yMax) {
-				// 	this.ySpeed += gravity;
-				// 	this.move(this.xSpeed, this.ySpeed);
-
-				// 	// Advanced exercise 1)
-				// 	if ( xSpeed < 0 || ySpeed < 0 ) {
-				// 		this.draw(this.startAngle -= Math.PI/4);
-				// 	} else {
-				// 		this.draw(this.startAngle += Math.PI/6);
-				// 	}
-
-				// 	if ( this.ypos > yMax || this.ypos < yMin ) {
-				// 			this.ySpeed *= -1*fac;
-				// 		}
-
-				// 	if ( this.xpos > xMax || this.xpos < xMin ) {
-				// 		this.xSpeed *= -1 ;
-				// 	}
-				// }
-			} // Ball constructor
+			}
+		} // 'Ball' class
 
 
-		// 3)
+		// 3) Create a 'Ball' object
 		ball1 = new Ball(10, 10, 10, 5, 5, 30);
 		// ball1.draw();
 
-		// 8)
+		// 8) Add a second 'Ball' object
 		ball2 = new Ball(100, 100, 30, 4, 4, 80);
 		ball2.colour = "red";
 
+		var numberSteps = 0;
+		var flip_flop = 1.0;
 
-		// 6)
+		// 6) 'step()' animation function
 		function step() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			ball1.draw();
-			ball1.move();
+			// ball1.draw();
+			// ball1.move();
 
-			ball2.draw();
-			ball2.move();
+			// ball2.draw();
+			// ball2.move();
 
-		// 9)
-			if ( ball1.intersects(ball2) ) {
-				console.log("ball1 and ball2 have collided.");
-				ball1.xVel = -ball1.xVel;
-				ball1.yVel = -ball1.yVel;
+			// 11) Animate pizzas
+			pizza1.draw();
+			pizza1.move();
+			pizza2.draw();
+			pizza2.move();
 
-				// ball2.xVel = -ball2.xVel;
-				// ball2.yVel = -ball2.yVel;
+			// 9) Ball collision detection
+			// if ( ball1.intersects(ball2) ) {
+			// 	console.log("ball1 and ball2 have collided.");
+
+			// 	// 10) Ball reaction
+			// 	reaction(ball1, ball2);
+			// }
+
+			// 11) Make pizzas rotate every 8 animation frames
+			if ( numberSteps % 8 == 0 ) {
+				pizza1.rotationAngle += Math.PI/12;
+				pizza2.rotationAngle += Math.PI/12;
+
+				// Reset the rotation angle
+				if ( pizza1.rotationAngle >= 2*Math.PI ) {
+					pizza1.rotationAngle = 0;
+				}
+				if ( pizza2.rotationAngle >= 2*Math.PI ) {
+					pizza2.rotationAngle = 0;
+				}
 			}
+
+			// 11) Make pizzas react to collisions
+			if ( pizza1.ball.intersects(pizza2.ball) ) {
+				reaction(pizza1.ball, pizza2.ball);
+			}
+
+			// 11) Resize and change color of the pizzas
+			if ( numberSteps == 400 ) {
+				// Resize pizzas
+				// Change by percentage of the current radius
+				// Size flips between decreasing and increasing the radius every time there is a size change
+				// that is why is 'flip_flop' is multiplied by '-1'
+				flip_flop *= -1;
+				var resizeFactor = flip_flop*Math.random() + 1;
+				pizza1.ball.resize(pizza1.ball.radius * resizeFactor);
+				// Bounds checking for pizza1 radius
+				if ( pizza1.ball.radius < 5 || pizza1.ball.radius > 250 ) {
+					// Reset pizza1 radius
+					pizza1.ball.radius = 50;
+				}
+
+				// Generate a different 'resizeFactor'
+				flip_flop *= -1;
+				resizeFactor = flip_flop*Math.random() + 1;
+				pizza2.ball.resize(pizza2.ball.radius * resizeFactor);
+				// Bounds checking for pizza1 radius
+				if ( pizza2.ball.radius < 5 || pizza2.ball.radius > 250 ) {
+					// Reset pizza2 radius
+					pizza2.ball.radius = 60;
+				}
+
+				console.log("pizza1.radius: " + pizza1.ball.radius + " pizza2.radius: " + pizza2.ball.radius);
+				// Switch 'flip_flop' so it will alternate in the next call
+				flip_flop *= -1;
+
+				// Change pizzas colour
+				pizza1.ball.colour = randomColor();
+				pizza2.ball.colour = randomColor();	
+
+				// Reset 'numberSteps'
+				numberSteps = 0;
+			}
+
+			numberSteps++;
 			requestAnimationFrame(step);
+		} // 'step' function
+
+		// 10) Ball reaction
+		function reaction(ball1, ball2) {
+				// Distance between centers
+				var dx = ball1.xpos - ball2.xpos;
+				var dy = ball1.ypos - ball2.ypos;
+
+				// Collision angle calculation
+				var collision_angle = Math.atan2(dy, dx);
+
+				// Velocity vectors
+				// Speed magnitude calculation
+				var mag1 =  Math.sqrt(ball1.xVel*ball1.xVel  +  ball1.yVel*ball1.yVel);
+				var mag2 =  Math.sqrt(ball2.xVel*ball2.xVel  +  ball2.yVel*ball2.yVel);
+
+				// Speed direction calculation
+				var dir1 = Math.atan2(ball1.yVel, ball1.xVel);
+				var dir2 = Math.atan2(ball2.yVel, ball2.xVel);
+
+				// Calculate velocity vectors components using rotation angle
+				var newXVel1 = mag1 * Math.cos(dir1 - collision_angle);
+				var newYVel1 = mag1 * Math.sin(dir1 - collision_angle);
+
+				var newXVel2 = mag2 * Math.cos(dir2 - collision_angle);
+				var newYVel2 = mag2 * Math.sin(dir2 - collision_angle);
+
+				// Apply 1D collision formula
+				var finalXVel1 = ((ball1.mass - ball2.mass)*newXVel1 + (2*ball2.mass*newXVel2))/(ball1.mass + ball2.mass);
+				var finalXVel2 = ((ball2.mass - ball1.mass)*newXVel2 + (2*ball2.mass*newXVel1))/(ball1.mass + ball2.mass);
+				var finalYVel1 = newYVel1;
+				var finalYVel2 = newYVel2;
+
+				// Translating new velocity vectors to the original axis system
+				ball1.xVel = Math.cos(collision_angle)*finalXVel1 + Math.cos(collision_angle+Math.PI/2)*finalYVel1;
+				ball1.yVel = Math.sin(collision_angle)*finalXVel1 + Math.sin(collision_angle+Math.PI/2)*finalYVel1;
+
+				ball2.xVel = Math.cos(collision_angle)*finalXVel2 + Math.cos(collision_angle+Math.PI/2)*finalYVel2;
+				ball2.yVel = Math.sin(collision_angle)*finalXVel2 + Math.sin(collision_angle+Math.PI/2)*finalYVel2;
+		} // 'reaction' function
+
+		// 11) Creating 'Pizza' class, it has a 'Ball' instance
+		class Pizza {
+			constructor(x, y, r, xVel, yVel, mass, colour) {
+				this.ball = new Ball(x, y, r, xVel, yVel, mass);
+				this.ball.colour = colour;
+				this.rotationAngle = 0;
+			}
+
+			move() { // Delegate method
+				this.ball.move();
+			}
+
+			draw() {
+				// Paint the whole circle and fill it
+				this.ball.draw();
+				
+				// Paint seven slices, calling the 'rotate' method
+				this.ball.rotate(this.rotationAngle);
+
+				// Paint the inner circle, this radius is a fraction of the pizza radius
+				ctx.beginPath();
+				ctx.arc(this.ball.xpos, this.ball.ypos, this.ball.r*0.93, 0, 2*Math.PI, true);
+				ctx.stroke();
+			}
+		} // 'Pizza' class
+
+		// 11) Creating 'Pizza' objects
+		var pizza1 = new Pizza(100, 100, 50, 4, 4, 80, "orange");
+		var pizza2 = new Pizza(200, 200, 60, 4, 4, 90, "orange");
+
+		// 11) Color change
+		function randomColor() {
+			// Generate a 24-bit random number
+			var randomNumber = Math.floor(Math.random() * 16777216);
+
+			return "#" + randomNumber.toString(16); // Returns the random number in a hex format string
 		}
 
+		// 6) Calling 'step()' animation function
 		step();
-
     </script>
 
   </body>
