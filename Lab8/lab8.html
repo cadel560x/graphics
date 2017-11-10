@@ -42,7 +42,7 @@
             var speedMagnitud = 0.4
 
             var noSteps = 0;
-            var hexColor = 0x0;
+            var hexColor = sphere.material.color.getHex();
 
             // 7) Render loop
             function repeatMe() {
@@ -63,12 +63,25 @@
                 }
 
                 // 14) Slow color change
-                hexColor = material.color.getHex() + 1;
-                
-                // if (noSteps < 500) {
+                hexColor = material.color.getHex() + 0x101010;
+                if (noSteps < 500) {
                     // console.log("material color:", material.color);
-                    console.log("hexColor: ", hexColor.toString(16));
-                // }
+                    console.log("hexColor +: ", hexColor.toString(2));
+                }
+
+                hexColor = hexColor & 0x000000111111;
+                
+                if (noSteps < 500) {
+                    // console.log("material color:", material.color);
+                    console.log("hexColor and: ", hexColor.toString(2));
+                }
+
+                hexColor = hexColor | 0xF000F;
+                
+                if (noSteps < 500) {
+                    // console.log("material color:", material.color);
+                    console.log("hexColor or: ", hexColor.toString(2));
+                }
 
                 material.color.setHex(hexColor);
 
@@ -99,6 +112,7 @@
             scene.add(directionalLight);
 
             console.log("hexColor: ", hexColor.toString(16));
+            // sphere.material.color.setHex(0);
 
             // 7) Call render loop
             repeatMe();
