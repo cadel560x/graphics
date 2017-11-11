@@ -14,7 +14,7 @@
             var scene = new THREE.Scene();
 
             // 4) Creating and adding a sphere
-            var geometry = new THREE.SphereGeometry(12, 32, 32);
+            var geometry = new THREE.SphereGeometry(6, 32, 32);
 
             // 9) 'wireframe: true'
             // var material = new THREE.MeshBasicMaterial({color: 0xff00ff, wireframe: true});
@@ -27,20 +27,22 @@
             var sphere = new THREE.Mesh(geometry, material);
 
             // Advanced exercise 1)
-            sphere.castShadow = true;       
-            
+            sphere.castShadow = true; 
             
             scene.add(sphere);
 
             // 5) Add a camera
             var camera = new THREE.PerspectiveCamera(80, window.innerWidth/window.innerHeight, 0.1, 1000);
+            // camera.position.z = 0;
+            // camera.position.x = -120;
+            // camera.rotateY(Math.PI/-2);
             camera.position.z = 40;
 
             // 6) Add a renderer
             var renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
 
-            // Advanced exercise 1)
+            // Advanced exercise 1) Enable shadows in the 'renderer'
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -140,21 +142,42 @@
             // 11) Directional light
             var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
             directionalLight.position.set(0, 1, 2);
+
             // Advanced exercise 1)
             directionalLight.castShadow = true;
+            // 'DirectionalLightShadow' has an 'OrthographicCamera', changing it's projection size
+            dlcam = directionalLight.shadow.camera;
+            dlcam.left = window.innerWidth/-32;
+            dlcam.right = window.innerWidth/32;
+            dlcam.top = window.innerHeight/32;
+            dlcam.bottom = window.innerHeight/-32;
+            dlcam.far = 30;
             scene.add(directionalLight);
 
             // Advanced exercise 1)
-            var planeGeometry = new THREE.PlaneGeometry( 85, 50, 32 );
+            var planeGeometry = new THREE.PlaneGeometry( 128, 96, 32 );
             var planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff}); 
             var plane = new THREE.Mesh( planeGeometry, planeMaterial );
+            plane.position.set(0, 0, -15);
             plane.receiveShadow = true;
             scene.add( plane );
 
             var spotLight = new THREE.SpotLight(0xffffff);
-            spotLight.position.set( 100, 100, 100);
+            spotLight.position.set( 0.5, 2.5, 35);
             spotLight.castShadow = true;
+            // 'SpotLightShadow' has an 'PerspectiveCamera', changing it's projection size
+            slcam = spotLight.shadow.camera;
+            slcam.near = 28;
+            slcam.far = 60;
+            slcam.fov = 30;
+            slcam.aspect = 4;
             scene.add(spotLight);
+
+            // var dlHelper = new THREE.CameraHelper( directionalLight.shadow.camera );
+            // scene.add(dlHelper);
+            var helper = new THREE.CameraHelper(slcam );
+            scene.add(helper);
+            
 
             // 7) Call render loop
             repeatMe();
