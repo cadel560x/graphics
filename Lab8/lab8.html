@@ -3,7 +3,7 @@
     <!-- 1) This file -->
     <head>
         <meta charset="UTF-8">
-        <title>Three Dimension Graphics</title>
+        <title>Three Dimensional Graphics</title>
         <style type="text/css"></style>
         <!-- 2) Include 'three.js' to this file -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/88/three.js"></script>
@@ -14,7 +14,7 @@
             var scene = new THREE.Scene();
 
             // 4) Creating and adding a sphere
-            var geometry = new THREE.SphereGeometry(12, 32, 32);
+            var geometry = new THREE.SphereGeometry(6, 32, 32);
 
             // 9) 'wireframe: true'
             // var material = new THREE.MeshBasicMaterial({color: 0xff00ff, wireframe: true});
@@ -23,40 +23,53 @@
             // var material = new THREE.MeshBasicMaterial({color: 0xff00ff});
 
             // 12) Change of material to 'MeshLambertMaterial'
-            var material = new THREE.MeshLambertMaterial({color: 0xff00ff});  
+            var material = new THREE.MeshLambertMaterial({color: 0xff00ff});
+
+            // Advanced exercise 3)
+            material.wireframe = true;
+
+
             var sphere = new THREE.Mesh(geometry, material);
 
             // Advanced exercise 1)
-            sphere.castShadow = true;       
-            
+            sphere.castShadow = true; 
             
             scene.add(sphere);
 
             // 5) Add a camera
             var camera = new THREE.PerspectiveCamera(80, window.innerWidth/window.innerHeight, 0.1, 1000);
+            
+            // Debug
+            // camera.position.z = 0;
+            // camera.position.x = -120;
+            // camera.rotateY(Math.PI/-2);
             camera.position.z = 40;
 
             // 6) Add a renderer
             var renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
 
-            // Advanced exercise 1)
+            // Advanced exercise 1) Enable shadows in the 'renderer'
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
             document.body.appendChild(renderer.domElement);
 
-            // 13) 'speed' vector used to alternate movement once the bounds are reached
-            var speedSense = 1;
-            var speedMagnitud = 0.4
+            // 14) 'xSpeed' vector used to alternate movement once the bounds are reached
+            var xSpeedSense = 1;
+            var xSpeedMagnitude = 0.4
 
-            // For debugging
+            // Debug
             // var noSteps = 0;
 
-            // 14) Color variables
+            // 15) Color variables
             var hexColor = sphere.material.color.getHex();
             var colorStep = 0x0;
             var colorSense = 1;
+
+            // Advanced exercise 2) 'zSpeed' vector used to alternate movement once the bounds are reached
+            var zSpeedSense = 1;
+            var zSpeedMagnitude = 0.4
 
             // 7) Render loop
             function repeatMe() {
@@ -64,16 +77,16 @@
                 sphere.rotateX(Math.PI/180);
                 sphere.rotateY(Math.PI/180);
 
-                // 14) Movieng the sphere with 'translate'
+                // 14) Moving the sphere with 'translate'
                 // sphere.translateX(1);
                 // sphere.translateY(1);
 
                 // Using the 'position' property is better.
                 // The 'position' property has three properties: 'x', 'y' and 'z'
-                sphere.position.x += speedMagnitud*speedSense;
+                sphere.position.x += xSpeedMagnitude*xSpeedSense;
 
-                if (sphere.position.x < -39 || sphere.position.x > 38) {
-                    speedSense *= -1;
+                if (sphere.position.x < -45 || sphere.position.x > 44) {
+                    xSpeedSense *= -1;
                 }
 
                 // 15) Slow color change
@@ -131,6 +144,14 @@
                     colorSense *= -1;
                 }
 
+                // Advanced exercise 2)
+                // The 'position' property has three properties: 'x', 'y' and 'z'
+                sphere.position.z += zSpeedMagnitude*zSpeedSense;
+
+                if (sphere.position.z < -9 || sphere.position.z > 1.2) {
+                    zSpeedSense *= -1;
+                }
+
                 // For debugging
                 // noSteps++;
 
@@ -140,21 +161,44 @@
             // 11) Directional light
             var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
             directionalLight.position.set(0, 1, 2);
+
             // Advanced exercise 1)
             directionalLight.castShadow = true;
+            // 'DirectionalLightShadow' has an 'OrthographicCamera', changing it's projection size
+            dlsCam = directionalLight.shadow.camera;
+            dlsCam.left = window.innerWidth/-24;
+            dlsCam.right = window.innerWidth/24;
+            dlsCam.top = window.innerHeight/32;
+            dlsCam.bottom = window.innerHeight/-32;
+            dlsCam.far = 30;
             scene.add(directionalLight);
 
             // Advanced exercise 1)
-            var planeGeometry = new THREE.PlaneGeometry( 85, 50, 32 );
+            var planeGeometry = new THREE.PlaneGeometry( 128, 96, 32 );
             var planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff}); 
             var plane = new THREE.Mesh( planeGeometry, planeMaterial );
+            plane.position.set(0, 0, -15);
             plane.receiveShadow = true;
             scene.add( plane );
 
             var spotLight = new THREE.SpotLight(0xffffff);
-            spotLight.position.set( 100, 100, 100);
+            spotLight.position.set( 0.5, 2.7, 36);
             spotLight.castShadow = true;
+            // 'SpotLightShadow' has an 'PerspectiveCamera', changing it's projection size
+            slsCam = spotLight.shadow.camera;
+            slsCam.near = 28;
+            slsCam.far = 60;
+            slsCam.fov = 40;
+            slsCam.aspect = 4;
             scene.add(spotLight);
+
+            // Debug
+            // var dlHelper = new THREE.CameraHelper( dlsCam );
+            // scene.add(dlHelper);
+
+            var helper = new THREE.CameraHelper(slsCam );
+            scene.add(helper);
+            
 
             // 7) Call render loop
             repeatMe();
