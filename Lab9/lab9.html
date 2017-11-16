@@ -4,7 +4,38 @@
     <head>
         <meta charset="UTF-8">
         <title>D3.js Demo</title>
-        <style type="text/css"></style>
+        <style type="text/css">
+            /* 5.5) Adding style and removing the fill from the plot */
+            .line {
+                fill: none;
+                stroke: DarkOrange;
+                stroke-width: 0.1em;
+            }
+
+            svg {
+                background-color: whitesmoke;
+            }
+
+            /* 5.6) Increasing label font size and changing font family */
+            .label {
+                font-size: 1.2em;
+                font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            }
+
+            /* 5.6) Style chart title */
+            .title {
+                font-size: 1.8em;
+                font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+                text-decoration: underline;
+            }
+
+            /* Advanced exercise 1) The zoom rectangle must not have any fill */
+            .zoom {
+                cursor: move; /* Change the cursos so we know we can zoom in this area */
+                fill: none;
+                pointer-events: all;
+            }
+        </style>
         <!-- 2) Include 'd3.js' to this file -->
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" 
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -34,17 +65,117 @@
             function plotCurrencyData(data) {
 
                 // 5.1) Setup SVG size and margins
-                var margin = {top: 50, right: 50, bottom: 50, left:50 };
+                var margin = {top: 100, right: 50, bottom: 100, left:100 };
                 var width = 900 - margin.left - margin.right;
-                var height = 670 - margin.top - margin.bottom;
+                var height = 700 - margin.top - margin.bottom;
 
                 // 5.2) Scales
                 var y = d3.scaleLinear()
-                        .domain(d3.extent(data, function(d) { return d["GBP/EUR"]}))
+                        .domain(d3.extent(data, function(d) { return d["GBP/EUR"]; }))
                         .range([height, 0]);
 
+                var parseDate = d3.timeParse("%d/%m/%Y"); // day/month/year
+                var x = d3.scaleTime()
+                        .domain(d3.extent(data, function(d) { return parseDate(d["Date"]); }))
+                        .range([0, width]);
 
-            }
+                // 5.3) Axes
+                // Tick date format
+                var  date_format = d3.timeFormat("%b %Y");
+
+                var xAxis = d3.axisBottom(x)
+                            .ticks(d3.timeMonth.every(6))
+                            .tickFormat(date_format);
+
+                var yAxis = d3.axisLeft(y)
+                            .ticks(20, "($.2f"); // '"($.2f"' is local currency format
+
+                // 5.3) Line
+                var valueline = d3.line()
+                                .x(function(d) { return x(parseDate(d["Date"])); })
+                                .y(function(d) { return y(d["GBP/EUR"]); });
+
+
+                // 5.4) Append SVG
+                var svg = d3.select('body')
+                          .append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+
+                          .append("g")
+                            .attr("transform", "translate(" +  margin.left + "," + margin.top +")");
+
+                // 5.5) Append axes
+                var gX = svg.append("g")
+                            .attr("class", "x axis")
+                            .attr("transform", "translate(0, " + height + ")")
+                            .call(xAxis);
+
+                var gY = svg.append("g")
+                            .attr("class", "y axis")
+                            .call(yAxis);
+
+                var path = svg.append("path")
+                    .attr("d", valueline(data))
+                    .attr('class', 'line');
+
+                var xLabel = svg.selectAll(".x text")  // select all the text elements for the xaxis
+                    .attr("transform", function(d) {
+                                             return "translate(" + this.getBBox().height*-2 + "," + this.getBBox().height + ")rotate(-45)";
+                        });
+                
+                // 5.6) Titles to the axes
+                svg.append("text")
+                    .attr("class", "label")
+                    .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                    .attr("transform", "translate(" + (-margin.left/2) + ", " + (height/2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+                    .text("GBP/EUR");
+
+                svg.append("text")
+                    .attr("class", "label")
+                    .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+                    .attr("transform", "translate(" + (width/2) + "," + (height + margin.bottom/1.5) + ")")  // centre below axis
+                    .text("Date");
+                
+                // 5.6) Chart title
+                svg.append("text")
+                    .attr("class", "title")
+                    .attr("x", (width / 2))             
+                    .attr("y", 0 - (margin.top / 2))
+                    .attr("text-anchor", "middle")
+                    .text("GBP to EUR Chart");
+                
+                // Advanced exercise 1) Zoom
+                // Create an event listener for zoom
+                var zoom = d3.zoom()
+                    .on("zoom", zoomFunction);
+
+                // Create a rectangle, an area in which zoom is applied
+                var view = svg.append("rect")
+                    .attr("class", "zoom")
+                    .attr("x", 0.5)
+                    .attr("y", 0.5)
+                    .attr("width", width - 1)
+                    .attr("height", height - 1)
+                    .call(zoom);
+
+                // Zoom Function
+                function zoomFunction(){ 
+                    view.attr("transform", d3.event.transform);
+                    console.log(d3.event);
+                    gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
+                    svg.selectAll(".x text")  // select all the text elements for the xaxis
+                    .attr("transform", function(d) {
+                                             return "translate(" + this.getBBox().height*-2 + "," + this.getBBox().height + ")rotate(-45)";
+                        });
+                    // gX.call(xAxis.scale(d3.event.transform.rotate(-45)));
+                    // gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
+
+                    path.attr("transform", d3.event.transform.rescaleY(1));
+                }
+
+            } // plotCurrencyData
+
 
         </script>
     </body>
