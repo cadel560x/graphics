@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <!-- 1) This file -->
+    <head>
+        <meta charset="UTF-8">
+        <title>D3.js Demo</title>
+        <style type="text/css"></style>
+        <!-- 2) Include 'd3.js' to this file -->
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" 
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js"></script>
+    </head>
+    <body>
+
+
+
+        <script type="text/javascript">
+            // 3) Getting the data from the cloud
+            function callback(json) {
+                // console.log(JSON.stringify(json.currency));
+                data = json.currency;
+
+                // 4) Call 'plotCurrencyData(json)'
+                plotCurrencyData(data);
+            }
+
+            $.ajax({
+                url: "http://34.249.149.110:5000/",
+                dataType: "jsonp"
+            });
+
+
+            // 4) 'plotCurrencyData(json)' implementation
+            function plotCurrencyData(data) {
+
+                // 5.1) Setup SVG size and margins
+                var margin = {top: 50, right: 50, bottom: 50, left:50 };
+                var width = 900 - margin.left - margin.right;
+                var height = 670 - margin.top - margin.bottom;
+
+                // 5.2) Scales
+                var y = d3.scaleLinear()
+                        .domain(d3.extent(data, function(d) { return d["GBP/EUR"]}))
+                        .range([height, 0]);
+
+
+            }
+
+        </script>
+    </body>
+</html>
