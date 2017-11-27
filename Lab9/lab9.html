@@ -161,8 +161,8 @@
 
                 // Zoom Function
                 function zoomFunction(){ 
-                    view.attr("transform", d3.event.transform);
-                    console.log(d3.event);
+                    // view.attr("transform", d3.event.transform);
+                    // console.log(d3.event.transform);
                     gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
                     svg.selectAll(".x text")  // select all the text elements for the xaxis
                     .attr("transform", function(d) {
@@ -171,11 +171,17 @@
                     // gX.call(xAxis.scale(d3.event.transform.rotate(-45)));
                     // gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
 
-                    path.attr("transform", d3.event.transform.rescaleY(1));
+                    var transformMatrix = d3.zoomTransform(this);
+
+                    console.log("transformMatrix(before): ", transformMatrix);
+                    transformMatrix.y = transformMatrix.applyY(0);
+                    console.log("transformMatrix(after): ", transformMatrix);
+                    path.attr("transform", transformMatrix);
+                    path.attr("d", valueline(data));
                 }
-
+                // console.log(valueline);
             } // plotCurrencyData
-
+            
 
         </script>
     </body>
