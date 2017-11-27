@@ -31,10 +31,15 @@
 
             /* Advanced exercise 1) The zoom rectangle must not have any fill */
             .zoom {
-                cursor: move; /* Change the cursos so we know we can zoom in this area */
+                cursor: zoom-in; /* Change the cursos so we know we can zoom in this area */
                 fill: none;
                 pointer-events: all;
             }
+
+            p {
+                margin-left: 1.8em;
+                font-family: helvetica;
+            }            
         </style>
         <!-- 2) Include 'd3.js' to this file -->
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" 
@@ -48,7 +53,6 @@
         <script type="text/javascript">
             // 3) Getting the data from the cloud
             function callback(json) {
-                // console.log(JSON.stringify(json.currency));
                 data = json.currency;
 
                 // 4) Call 'plotCurrencyData(json)'
@@ -161,28 +165,20 @@
 
                 // Zoom Function
                 function zoomFunction(){ 
-                    // view.attr("transform", d3.event.transform);
-                    // console.log(d3.event.transform);
                     gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
                     svg.selectAll(".x text")  // select all the text elements for the xaxis
                     .attr("transform", function(d) {
                                              return "translate(" + this.getBBox().height*-2 + "," + this.getBBox().height + ")rotate(-45)";
                         });
-                    // gX.call(xAxis.scale(d3.event.transform.rotate(-45)));
-                    // gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
 
-                    var transformMatrix = d3.zoomTransform(this);
-
-                    console.log("transformMatrix(before): ", transformMatrix);
-                    transformMatrix.y = transformMatrix.applyY(0);
-                    console.log("transformMatrix(after): ", transformMatrix);
-                    // path.attr("transform", transformMatrix);
+                    path.attr('transform', `scale(${d3.event.transform.k}, 1)`);
                     path.attr("d", valueline(data));
                 }
-                // console.log(valueline);
+
+                d3.select("body").append(function() { return document.createElement("p") });
+                d3.select("body > p").html("Zoom using your mouse's scroll wheel");
             } // plotCurrencyData
             
-
         </script>
     </body>
 </html>
