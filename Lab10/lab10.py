@@ -16,7 +16,7 @@ gray_image = cv2.cvtColor(imgOrig, cv2.COLOR_BGR2GRAY)
 img = cv2.cvtColor(imgOrig, cv2.COLOR_BGR2RGB)
 
 nrows = 2
-ncols = 3
+ncols = 4
 
 plt.subplot(nrows,ncols,1),plt.imshow(img,cmap = 'gray')
 plt.title('Original'), plt.xticks([]), plt.yticks([])
@@ -56,4 +56,14 @@ plt.title('Sobel x/Blur 3x3'), plt.xticks([]), plt.yticks([])
 plt.subplot(nrows, ncols,6),plt.imshow(sobelVertical,cmap = 'gray')
 plt.title('Sobel y/Blur 3x3'), plt.xticks([]), plt.yticks([])
 
+# 11) Adding the two Sobel processed images
+sobelSum = sobelHorizontal + sobelVertical
+
+plt.subplot(nrows, ncols,7),plt.imshow(sobelSum,cmap = 'gray')
+plt.title('Sobel sum'), plt.xticks([]), plt.yticks([])
+
+# 12)
+canny = cv2.Canny(sobelSum, 100, 200)
+plt.subplot(nrows, ncols,7),plt.imshow(canny,cmap = 'gray')
+plt.title('Canny edge detection'), plt.xticks([]), plt.yticks([])
 plt.show()
