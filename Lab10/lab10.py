@@ -149,11 +149,43 @@ sobelSum2 = sobelHorizontal2 + sobelVertical2
 plt.subplot(nrows, ncols,6),plt.imshow(sobelSum2,cmap = 'gray')
 plt.title('Sobel sum'), plt.xticks([]), plt.yticks([])
 
-# 12) Apply Canny edge detection
+# Apply Canny edge detection
 cannyThreshold = 20
 cannyParam2 = 60
 canny2 = cv2.Canny(imgBlur3x3_2, cannyThreshold, cannyParam2)
 
 plt.subplot(nrows, ncols,7),plt.imshow(canny2,cmap = 'gray')
 plt.title('Canny edge detection'), plt.xticks([]), plt.yticks([])
+plt.show()
+
+# Advanced exercise 1)
+# Got this from StackOverflow:
+# https://stackoverflow.com/questions/26445153/iterations-through-pixels-in-an-image-are-terribly-slow-with-python-opencv
+nrows = 1
+ncols = 2
+
+# Threshold between 0 and 255
+sobelThreshold = 32
+
+# Looks like 'sobelSum' is type 'float64', we are going to do some casts later
+print("Image type: ", sobelSum.dtype)
+print("Image size(amount of pixels): ", sobelSum.size)
+
+height, width = sobelSum.shape
+
+for i in range(0, height):
+     for j in range(0, width):
+        #  Cast 'pixel' into a unsigned integer (0-255), so comparing against the threshold is more understandable
+         pixel = np.uint8(sobelSum[i, j])
+
+         if pixel < sobelThreshold:
+             sobelSum[i, j] = 0
+         else:
+             sobelSum[i, j] = 255
+
+# cv2.imshow('Sobel sum edge detection', sobelSum)
+# cv2.waitKey()
+
+plt.subplot(nrows, ncols,1),plt.imshow(sobelSum,cmap = 'gray')
+plt.title('Sobel sum edge detection'), plt.xticks([]), plt.yticks([])
 plt.show()
