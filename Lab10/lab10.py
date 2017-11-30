@@ -161,31 +161,79 @@ plt.show()
 # Advanced exercise 1)
 # Got this from StackOverflow:
 # https://stackoverflow.com/questions/26445153/iterations-through-pixels-in-an-image-are-terribly-slow-with-python-opencv
-nrows = 1
-ncols = 2
-
-# Threshold between 0 and 255
-sobelThreshold = 32
+nrows = 2
+ncols = 3
 
 # Looks like 'sobelSum' is type 'float64', we are going to do some casts later
-print("Image type: ", sobelSum.dtype)
-print("Image size(amount of pixels): ", sobelSum.size)
+print("'sobelSum' Image type: ", sobelSum.dtype)
+print("'sobelSum' Image size(amount of pixels): ", sobelSum.size)
+sobelHeight, sobelWidth = sobelSum.shape
+print("'sobelSum' Image width and height of pixels): ", sobelWidth, ", ", sobelHeight)
 
-height, width = sobelSum.shape
+# Make copies from the original 'sobelSum'
+sobelSum_63 = sobelSum.copy()
+sobelSum_127 = sobelSum.copy()
+sobelSum_191 = sobelSum.copy()
+sobelSum_223 = sobelSum.copy()
 
-for i in range(0, height):
-     for j in range(0, width):
-        #  Cast 'pixel' into a unsigned integer (0-255), so comparing against the threshold is more understandable
-         pixel = np.uint8(sobelSum[i, j])
+# Make a function that process the 'sobelSum_XX' images
+def sobelEdge(img, sobelThreshold):
+    height, width = img.shape
 
-         if pixel < sobelThreshold:
-             sobelSum[i, j] = 0
-         else:
-             sobelSum[i, j] = 255
+    for i in range(0, height):
+        for j in range(0, width):
+            #  Cast 'pixel' into a unsigned integer (0-255), so comparing against the threshold is more understandable
+            pixel = np.uint8(img[i, j])
 
-# cv2.imshow('Sobel sum edge detection', sobelSum)
-# cv2.waitKey()
+            if pixel < sobelThreshold:
+                img[i, j] = 0
+            else:
+                img[i, j] = 255
+    return
 
-plt.subplot(nrows, ncols,1),plt.imshow(sobelSum,cmap = 'gray')
-plt.title('Sobel sum edge detection'), plt.xticks([]), plt.yticks([])
+# Threshold between 0 and 255
+sobelEdge(sobelSum_63, 63)
+sobelEdge(sobelSum_127, 127)
+sobelEdge(sobelSum_191, 191)
+sobelEdge(sobelSum_223, 223)
+
+# Plot the processed images
+plt.subplot(nrows, ncols,1),plt.imshow(sobelSum_63,cmap = 'gray')
+plt.title('Sobel threshold 63'), plt.xticks([]), plt.yticks([])
+plt.subplot(nrows, ncols,2),plt.imshow(sobelSum_127,cmap = 'gray')
+plt.title('Sobel threshold 127'), plt.xticks([]), plt.yticks([])
+plt.subplot(nrows, ncols,3),plt.imshow(sobelSum_191,cmap = 'gray')
+plt.title('Sobel threshold 191'), plt.xticks([]), plt.yticks([])
+plt.subplot(nrows, ncols,4),plt.imshow(sobelSum_223,cmap = 'gray')
+plt.title('Sobel threshold 223'), plt.xticks([]), plt.yticks([])
+
+# Advanced exercise 2)
+# Make a function that process images using the first derivative
+def firstDerivative(img):
+    height, width = img.shape
+
+    for i in range(0, height):
+        # Start at the second pixel of the current row
+        for j in range(1, width):
+            # Get the current pixel
+            pixel = img[i, j]
+            # Get the prexious pixel
+            pixel_1 = img[i, j-1]
+
+            # Get the differential to see if the pixels had the same value
+            if (pixel - pixel_1) != 0:
+                img[i, j] = 0
+    return
+
+# Make a copy from the original 'sobelSum_191'
+# sobel1Deriv = sobelSum_191.copy()
+
+# Make a copy from the original 'gray_image'
+firstDeriv = gray_image.copy()
+print("firstDeriv type: ", firstDeriv.dtype)
+
+firstDerivative(firstDeriv)
+
+plt.subplot(nrows, ncols,5),plt.imshow(firstDeriv,cmap = 'gray')
+plt.title('First derivative'), plt.xticks([]), plt.yticks([])
 plt.show()
