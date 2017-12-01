@@ -245,7 +245,8 @@ sobelEdge(sobelSum_mean, mean, min, max)
 sobelEdge(sobelSum_1StdDevAbove, oneStdDevAbove, min, max)
 sobelEdge(sobelSum_Arbitrary, arbitraryThreshold, min, max)
 
-
+cv2.imshow('sobelSum_Arbitrary', sobelSum_Arbitrary)
+cv2.waitKey()
 
 # Plot the processed images
 plt.subplot(nrows, ncols,1),plt.imshow(sobelSum_1StdDevBelow,cmap = 'gray')
