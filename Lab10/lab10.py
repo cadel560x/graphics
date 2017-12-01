@@ -237,7 +237,7 @@ print("one std deviation below: ", oneStdDevBelow, ", ", "one std deviation abov
 # sobelEdge(sobelSum_thirdQuartile, thridQuartile, min, max)
 # sobelEdge(sobelSum_223, 223, min, max)
 
-arbitraryThreshold = 300
+arbitraryThreshold = 300 # The value '300' is arbitrary
 arbitraryThresholdTitle = 'Sobel threshold = ' + str(arbitraryThreshold)
 
 sobelEdge(sobelSum_1StdDevBelow, oneStdDevBelow, min, max)
@@ -245,8 +245,8 @@ sobelEdge(sobelSum_mean, mean, min, max)
 sobelEdge(sobelSum_1StdDevAbove, oneStdDevAbove, min, max)
 sobelEdge(sobelSum_Arbitrary, arbitraryThreshold, min, max)
 
-cv2.imshow('sobelSum_Arbitrary', sobelSum_Arbitrary)
-cv2.waitKey()
+# cv2.imshow('sobelSum_Arbitrary', sobelSum_Arbitrary)
+# cv2.waitKey()
 
 # Plot the processed images
 plt.subplot(nrows, ncols,1),plt.imshow(sobelSum_1StdDevBelow,cmap = 'gray')
@@ -257,6 +257,7 @@ plt.subplot(nrows, ncols,3),plt.imshow(sobelSum_1StdDevAbove,cmap = 'gray')
 plt.title('Sobel threshold = 1 std deviation above'), plt.xticks([]), plt.yticks([])
 plt.subplot(nrows, ncols,4),plt.imshow(sobelSum_Arbitrary,cmap = 'gray')
 plt.title(arbitraryThresholdTitle), plt.xticks([]), plt.yticks([])
+plt.show()
 
 # Advanced exercise 2)
 # Make a function that process images using the first derivative on x
