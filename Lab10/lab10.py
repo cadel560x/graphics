@@ -161,7 +161,7 @@ plt.show()
 # Advanced exercise 1)
 # Got this from StackOverflow:
 # https://stackoverflow.com/questions/26445153/iterations-through-pixels-in-an-image-are-terribly-slow-with-python-opencv
-nrows = 2
+nrows = 3
 ncols = 3
 
 # Looks like 'sobelSum' is type 'float64', we are going to do some casts later
@@ -171,10 +171,14 @@ sobelHeight, sobelWidth = sobelSum.shape
 print("'sobelSum' Image width and height of pixels): ", sobelWidth, ", ", sobelHeight)
 
 # Make copies from the original 'sobelSum'
-sobelSum_firstQuartile = sobelSum.copy()
-sobelSum_median = sobelSum.copy()
-sobelSum_thirdQuartile = sobelSum.copy()
-sobelSum_223 = sobelSum.copy()
+# sobelSum_firstQuartile = sobelSum.copy()
+# sobelSum_median = sobelSum.copy()
+# sobelSum_thirdQuartile = sobelSum.copy()
+# sobelSum_223 = sobelSum.copy()
+sobelSum_1StdDevBelow = sobelSum.copy()
+sobelSum_mean = sobelSum.copy()
+sobelSum_1StdDevAbove = sobelSum.copy()
+sobelSum_Arbitrary = sobelSum.copy()
 
 # Make a function to know the 'min' and 'max' values of the image
 def minMax(img):
@@ -193,43 +197,69 @@ def minMax(img):
     return min, max
 
 # Make a function that process the 'sobelSum_XX' images
-def sobelEdge(img, sobelThreshold, min, max):
+def sobelEdge(img, sobelThreshold, low, hi):
     height, width = img.shape
 
     for i in range(0, height):
         for j in range(0, width):
             if img[i, j] < sobelThreshold:
-                img[i, j] = min
+                img[i, j] = low
             else:
-                img[i, j] = max
+                img[i, j] = hi
     return
 
 min, max = minMax(sobelSum)
 print("min: ", min, ", max: ", max)
-median = (min + max)/2
-firstQuartile = (min + median)/2
-thridQuartile = (median + max)/2
+
+# minPy = np.amin(sobelSum)
+# maxPy = np.amax(sobelSum)
+# print("Unsing numpy - min: ", minPy, ", max: ", maxPy)
+
+# Quartiles
+# median = (min + max)/2
+# firstQuartile = (min + median)/2
+# thridQuartile = (median + max)/2
+
+# Get the mean and standard deviation instead of quartiles
+mean = np.mean(sobelSum)
+standardDev = np.std(sobelSum)
+
+# Get one standard deviation below and above the mean
+oneStdDevBelow = mean - standardDev
+oneStdDevAbove = mean + standardDev
+
+print("sobelSum mean: ", mean, ", standard deviation: ", standardDev)
+print("one std deviation below: ", oneStdDevBelow, ", ", "one std deviation above: ", oneStdDevAbove)
+
+# Threshold between first quartile, median and third quartile. The value '223' is arbitrary
+# sobelEdge(sobelSum_firstQuartile, firstQuartile, min, max)
+# sobelEdge(sobelSum_median, median, min, max)
+# sobelEdge(sobelSum_thirdQuartile, thridQuartile, min, max)
+# sobelEdge(sobelSum_223, 223, min, max)
+
+arbitraryThreshold = 300
+arbitraryThresholdTitle = 'Sobel threshold = ' + str(arbitraryThreshold)
+
+sobelEdge(sobelSum_1StdDevBelow, oneStdDevBelow, min, max)
+sobelEdge(sobelSum_mean, mean, min, max)
+sobelEdge(sobelSum_1StdDevAbove, oneStdDevAbove, min, max)
+sobelEdge(sobelSum_Arbitrary, arbitraryThreshold, min, max)
 
 
-# Threshold between 0 and 255
-sobelEdge(sobelSum_firstQuartile, firstQuartile, min, max)
-sobelEdge(sobelSum_median, median, min, max)
-sobelEdge(sobelSum_thirdQuartile, thridQuartile, min, max)
-sobelEdge(sobelSum_223, 223, min, max)
 
 # Plot the processed images
-plt.subplot(nrows, ncols,1),plt.imshow(sobelSum_firstQuartile,cmap = 'gray')
-plt.title('Sobel threshold firstQuartile'), plt.xticks([]), plt.yticks([])
-plt.subplot(nrows, ncols,2),plt.imshow(sobelSum_median,cmap = 'gray')
-plt.title('Sobel threshold median'), plt.xticks([]), plt.yticks([])
-plt.subplot(nrows, ncols,3),plt.imshow(sobelSum_thirdQuartile,cmap = 'gray')
-plt.title('Sobel threshold thridQuartile'), plt.xticks([]), plt.yticks([])
-plt.subplot(nrows, ncols,4),plt.imshow(sobelSum_223,cmap = 'gray')
-plt.title('Sobel threshold 223'), plt.xticks([]), plt.yticks([])
+plt.subplot(nrows, ncols,1),plt.imshow(sobelSum_1StdDevBelow,cmap = 'gray')
+plt.title('Sobel threshold = 1 std deviation below'), plt.xticks([]), plt.yticks([])
+plt.subplot(nrows, ncols,2),plt.imshow(sobelSum_mean,cmap = 'gray')
+plt.title('Sobel threshold = mean'), plt.xticks([]), plt.yticks([])
+plt.subplot(nrows, ncols,3),plt.imshow(sobelSum_1StdDevAbove,cmap = 'gray')
+plt.title('Sobel threshold = 1 std deviation above'), plt.xticks([]), plt.yticks([])
+plt.subplot(nrows, ncols,4),plt.imshow(sobelSum_Arbitrary,cmap = 'gray')
+plt.title(arbitraryThresholdTitle), plt.xticks([]), plt.yticks([])
 
 # Advanced exercise 2)
-# Make a function that process images using the first derivative
-def firstDerivative(img):
+# Make a function that process images using the first derivative on x
+def firstDerivative_x(img):
     # Initialize local variables
     height, width = img.shape
     firstDeriv = np.zeros(shape=(height,width), dtype=np.float64)
@@ -244,8 +274,25 @@ def firstDerivative(img):
             firstDeriv[i, j-1] = current_pixel - previous_pixel
     return firstDeriv
 
+# Make a function that process images using the first derivative on y
+def firstDerivative_y(img):
+    # Initialize local variables
+    height, width = img.shape
+    firstDeriv = np.zeros(shape=(height,width), dtype=np.float64)
 
-firstDeriv = firstDerivative(imgBlur3x3)
+    for j in range(0, width):
+        # Start at the second pixel of the current column
+        for i in range(1, height):
+            # Copy the respective pixels form 'img' into 'float64' variables, so we can work with data type 'float64' that allows negative values
+            previous_pixel = np.float64(img[i-1, j])
+            current_pixel = np.float64(img[i, j])
+            # Get the differential between the current pixel and the previous pixel
+            firstDeriv[i-1, j] = current_pixel - previous_pixel
+
+    return firstDeriv
+
+firstDerivX = firstDerivative_x(imgBlur3x3)
+firstDerivY = firstDerivative_y(imgBlur3x3)
 
 # print("imgBlur3x3 matrix")
 # print(imgBlur3x3)
@@ -254,9 +301,14 @@ firstDeriv = firstDerivative(imgBlur3x3)
 # print("firstDeriv type: ", firstDeriv.dtype)
 # print("imgBlur3x3 type: ", imgBlur3x3.dtype)
 
+firstDerivSum = firstDerivX + firstDerivY
 
 plt.subplot(nrows, ncols,5),plt.imshow(imgBlur3x3,cmap = 'gray')
 plt.title('Original (blur3x3)'), plt.xticks([]), plt.yticks([])
-plt.subplot(nrows, ncols,6),plt.imshow(firstDeriv,cmap = 'gray')
-plt.title('First derivative of blur3x3'), plt.xticks([]), plt.yticks([])
+plt.subplot(nrows, ncols,6),plt.imshow(firstDerivX,cmap = 'gray')
+plt.title('First derivative of blur3x3 on x'), plt.xticks([]), plt.yticks([])
+plt.subplot(nrows, ncols,7),plt.imshow(firstDerivY,cmap = 'gray')
+plt.title('First derivative of blur3x3 on y'), plt.xticks([]), plt.yticks([])
+plt.subplot(nrows, ncols,8),plt.imshow(firstDerivSum,cmap = 'gray')
+plt.title('Sum of first derivatives on x and y'), plt.xticks([]), plt.yticks([])
 plt.show()
