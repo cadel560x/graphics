@@ -176,26 +176,46 @@ sobelSum_127 = sobelSum.copy()
 sobelSum_191 = sobelSum.copy()
 sobelSum_223 = sobelSum.copy()
 
+# Make a function to know the 'min' and 'max' values of the image
+def minMax(img):
+    # Initialize local variables
+    height, width = img.shape    
+    min = img[0, 0]
+    max = img[0, 0]
+
+    for i in range(0, height):
+        for j in range(0, width):
+            if img[i, j] < min:
+                min = img[i, j]
+            if max < img[i, j]:
+                max = img[i, j]
+    
+    return min, max
+
 # Make a function that process the 'sobelSum_XX' images
-def sobelEdge(img, sobelThreshold):
+def sobelEdge(img, sobelThreshold, min, max):
     height, width = img.shape
 
     for i in range(0, height):
         for j in range(0, width):
-            #  Cast 'pixel' into a unsigned integer (0-255), so comparing against the threshold is more understandable
-            pixel = np.uint8(img[i, j])
-
-            if pixel < sobelThreshold:
-                img[i, j] = 0
+            if img[i, j] < sobelThreshold:
+                img[i, j] = min
             else:
-                img[i, j] = 255
+                img[i, j] = max
     return
 
+min, max = minMax(sobelSum)
+print("min: ", min, ", max: ", max)
+median = (min + max)/2
+firstQuartile = (min + median)/2
+thridQuartile = (median + max)/2
+
+
 # Threshold between 0 and 255
-sobelEdge(sobelSum_63, 63)
-sobelEdge(sobelSum_127, 127)
-sobelEdge(sobelSum_191, 191)
-sobelEdge(sobelSum_223, 223)
+sobelEdge(sobelSum_63, firstQuartile, min, max)
+sobelEdge(sobelSum_127, median, min, max)
+sobelEdge(sobelSum_191, thridQuartile, min, max)
+sobelEdge(sobelSum_223, 223, min, max)
 
 # Plot the processed images
 plt.subplot(nrows, ncols,1),plt.imshow(sobelSum_63,cmap = 'gray')
@@ -210,29 +230,35 @@ plt.title('Sobel threshold 223'), plt.xticks([]), plt.yticks([])
 # Advanced exercise 2)
 # Make a function that process images using the first derivative
 def firstDerivative(img):
+    # Initialize local variables
     height, width = img.shape
+    firstDeriv = img.copy()
 
     for i in range(0, height):
         # Start at the second pixel of the current row
         for j in range(1, width):
             # Get the current pixel
-            pixel = img[i, j]
+            # pixel = img[i, j]
             # Get the prexious pixel
-            pixel_1 = img[i, j-1]
+            # pixel_1 = img[i, j-1]
 
             # Get the differential to see if the pixels had the same value
-            if (pixel - pixel_1) != 0:
-                img[i, j] = 0
-    return
+            # if (pixel - pixel_1) != 0:
+            firstDeriv[i, j-1] = img[i, j] - img[i, j-1]
+    return firstDeriv
 
 # Make a copy from the original 'sobelSum_191'
 # sobel1Deriv = sobelSum_191.copy()
 
 # Make a copy from the original 'gray_image'
-firstDeriv = gray_image.copy()
-print("firstDeriv type: ", firstDeriv.dtype)
+# firstDeriv = gray_image.copy()
+# print("firstDeriv type: ", firstDeriv.dtype)
 
-firstDerivative(firstDeriv)
+firstDeriv = firstDerivative(imgBlur3x3)
+print(firstDeriv)
+print("firstDeriv type: ", firstDeriv.dtype)
+print("imgBlur3x3 type: ", imgBlur3x3.dtype)
+
 
 plt.subplot(nrows, ncols,5),plt.imshow(firstDeriv,cmap = 'gray')
 plt.title('First derivative'), plt.xticks([]), plt.yticks([])
