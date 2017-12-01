@@ -246,12 +246,6 @@ def firstDerivative(img):
             firstDeriv[i, j-1] = current_pixel - previous_pixel
     return firstDeriv
 
-# Make a copy from the original 'sobelSum_191'
-# sobel1Deriv = sobelSum_191.copy()
-
-# Make a copy from the original 'gray_image'
-# firstDeriv = gray_image.copy()
-# print("firstDeriv type: ", firstDeriv.dtype)
 
 firstDeriv = firstDerivative(imgBlur3x3)
 print(imgBlur3x3)
