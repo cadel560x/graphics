@@ -161,7 +161,7 @@ plt.show()
 # Advanced exercise 1)
 # Got this from StackOverflow:
 # https://stackoverflow.com/questions/26445153/iterations-through-pixels-in-an-image-are-terribly-slow-with-python-opencv
-nrows = 3
+nrows = 2
 ncols = 3
 
 # Looks like 'sobelSum' is type 'float64', we are going to do some casts later
@@ -249,13 +249,15 @@ sobelEdge(sobelSum_Arbitrary, arbitraryThreshold, min, max)
 # cv2.waitKey()
 
 # Plot the processed images
-plt.subplot(nrows, ncols,1),plt.imshow(sobelSum_1StdDevBelow,cmap = 'gray')
+plt.subplot(nrows, ncols,1),plt.imshow(imgBlur3x3,cmap = 'gray')
+plt.title('Original (blur3x3)'), plt.xticks([]), plt.yticks([])
+plt.subplot(nrows, ncols,2),plt.imshow(sobelSum_1StdDevBelow,cmap = 'gray')
 plt.title('Sobel threshold = 1 std deviation below'), plt.xticks([]), plt.yticks([])
-plt.subplot(nrows, ncols,2),plt.imshow(sobelSum_mean,cmap = 'gray')
+plt.subplot(nrows, ncols,3),plt.imshow(sobelSum_mean,cmap = 'gray')
 plt.title('Sobel threshold = mean'), plt.xticks([]), plt.yticks([])
-plt.subplot(nrows, ncols,3),plt.imshow(sobelSum_1StdDevAbove,cmap = 'gray')
+plt.subplot(nrows, ncols,4),plt.imshow(sobelSum_1StdDevAbove,cmap = 'gray')
 plt.title('Sobel threshold = 1 std deviation above'), plt.xticks([]), plt.yticks([])
-plt.subplot(nrows, ncols,4),plt.imshow(sobelSum_Arbitrary,cmap = 'gray')
+plt.subplot(nrows, ncols,5),plt.imshow(sobelSum_Arbitrary,cmap = 'gray')
 plt.title(arbitraryThresholdTitle), plt.xticks([]), plt.yticks([])
 plt.show()
 
@@ -305,12 +307,14 @@ firstDerivY = firstDerivative_y(imgBlur3x3)
 
 firstDerivSum = firstDerivX + firstDerivY
 
-plt.subplot(nrows, ncols,5),plt.imshow(imgBlur3x3,cmap = 'gray')
+nrows = 2
+ncols = 2
+plt.subplot(nrows, ncols,1),plt.imshow(imgBlur3x3,cmap = 'gray')
 plt.title('Original (blur3x3)'), plt.xticks([]), plt.yticks([])
-plt.subplot(nrows, ncols,6),plt.imshow(firstDerivX,cmap = 'gray')
+plt.subplot(nrows, ncols,2),plt.imshow(firstDerivX,cmap = 'gray')
 plt.title('First derivative of blur3x3 on x'), plt.xticks([]), plt.yticks([])
-plt.subplot(nrows, ncols,7),plt.imshow(firstDerivY,cmap = 'gray')
+plt.subplot(nrows, ncols,3),plt.imshow(firstDerivY,cmap = 'gray')
 plt.title('First derivative of blur3x3 on y'), plt.xticks([]), plt.yticks([])
-plt.subplot(nrows, ncols,8),plt.imshow(firstDerivSum,cmap = 'gray')
+plt.subplot(nrows, ncols,4),plt.imshow(firstDerivSum,cmap = 'gray')
 plt.title('Sum of first derivatives on x and y'), plt.xticks([]), plt.yticks([])
 plt.show()
