@@ -47,8 +47,12 @@
             var hero = {
                 speed: 256 // movement in pixels per second
             };
-            var monster = {};
+
+            // var monster = {
+            //     speed: 64 // movement in pixels per second
+            // };
             var monstersCaught = 0;
+            var monsters = []; // An array of monsters
 
             // Handle keyboard controls
             var keysDown = {};
@@ -66,9 +70,14 @@
                 hero.x = canvas.width / 2;
                 hero.y = canvas.height / 2;
 
-                // Throw the monster somewhere on the screen randomly
-                monster.x = 32 + (Math.random() * (canvas.width - 64));
-                monster.y = 32 + (Math.random() * (canvas.height - 64));
+                for (i = 0; i < 3; i++) {
+                    // Throw the monsters somewhere on the screen randomly
+                    monsters.push({
+                        x:  32 + (Math.random() * (canvas.width - 64)),
+                        y:  32 + (Math.random() * (canvas.width - 64)),
+                        speed: 64
+                    });
+                }
             };
 
             // Update game objects
@@ -86,15 +95,20 @@
                     hero.x += hero.speed * modifier;
                 }
 
-                // Are they touching?
-                if (
-                    hero.x <= (monster.x + 32)
-                    && monster.x <= (hero.x + 32)
-                    && hero.y <= (monster.y + 32)
-                    && monster.y <= (hero.y + 32)
-                ) {
-                    ++monstersCaught;
-                    reset();
+                for(i = 0; i < monsters.length; i++) {
+                // Collision detection
+                    if (
+                        hero.x <= (monsters[i].x + 32)
+                        && monsters[i].x <= (hero.x + 32)
+                        && hero.y <= (monsters[i].y + 32)
+                        && monsters[i].y <= (hero.y + 32)
+                        ) {
+                          ++monstersCaught;
+                          delete monsters[i];
+                        }
+                    if ( monsters.length == 0 ) {
+                        reset();
+                    }
                 }
             };
 
@@ -109,7 +123,9 @@
                 }
 
                 if (monsterReady) {
-                    ctx.drawImage(monsterImage, monster.x, monster.y);
+                    for (i = 0; i < monsters.length; i++) {
+                        ctx.drawImage(monsterImage, monsters[i].x, monsters[i].y);
+                    }
                 }
 
                 // Score
@@ -134,9 +150,6 @@
                 requestAnimationFrame(main);
             };
 
-            // Cross-browser support for requestAnimationFrame
-            var w = window;
-            requestAnimationFrame = w.requestAnimationFrame;
 
             // Let's play this game!
             var then = Date.now();
