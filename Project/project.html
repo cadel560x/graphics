@@ -14,6 +14,8 @@
             var canvas = document.getElementById("gamecanvas");
 		    var ctx = canvas.getContext("2d");
 
+            var rect; // Used to define an area for the 'restart' message
+
             // Initialize the canvas
             function init() {
 			    canvas.width = 512;
@@ -21,8 +23,6 @@
 			    canvas.style.border = "solid 1px black";
 		    }
 
-
-            var rect; // Used to define an area for the 'restart' message
             var gameOver = false; // Game sentinel
             var level = 0; // Level counter
 
@@ -353,14 +353,14 @@
                 ctx.font = "24px Helvetica";
                 ctx.textAlign = "left";
                 ctx.textBaseline = "top";
-                ctx.fillText("Goblins caught: " + monstersCaught, 32, 32);
+                ctx.fillText("Monsters caught: " + monstersCaught, 32, 32);
                 // Level
                 ctx.fillText("Level: " + level, 32, 56);
 
             }; // render()
 
 
-            function checkStart(e) {
+            function checkRestart(e) {
                 var p = getMousePos(e);
         
                 if (p.x >= rect.x && p.x <= rect.x + rect.w &&
@@ -368,7 +368,7 @@
                     
                     location.reload();
                 }
-            }; // checkStart(e)
+            }; // checkRestart(e)
         
 
             function getMousePos(e) {
@@ -404,23 +404,22 @@
                     ctx.textBaseline = "top";
                     ctx.fillText("GAME OVER", canvas.width/4.5, canvas.height/2.2);
 
-                    // 'restart' is inside of 'rect'
                     rect = {
-                            x: canvas.width/4.5 + 20,
-                            y: canvas.height/2.2 + 40,
-                            w: 250,
-                            h: 30
-                    };
+                        x: canvas.width/4.5 + 25,
+                        y: canvas.height/2.2 + 40,
+                        w: 250,
+                        h: 30
+                    }; 
 
                     // Visual aid
                     // ctx.rect(rect.x, rect.y, rect.w, rect.h);
                     // ctx.stroke();
 
                     ctx.font = "28px Helvetica";
-                    ctx.fillText(" click here to restart", rect.x, rect.y);
+                    ctx.fillText("click here to restart", rect.x, rect.y);
 
                     // 'restart' is clickable
-                    canvas.addEventListener('click', checkStart, false);
+                    canvas.addEventListener('click', checkRestart, false);
                 } // if - else
 
                 // start();
