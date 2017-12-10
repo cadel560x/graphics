@@ -35,7 +35,7 @@
             };
             heroImage.src = "images/hero.png";
 
-            // Monster image
+            // Monster image (30widthx32height)
             var monsterReady = false;
             var monsterImage = new Image();
             monsterImage.onload = function () {
@@ -52,12 +52,14 @@
             //     speed: 64 // movement in pixels per second
             // };
             var monstersCaught = 0;
+            var monstersDeleted = 0;
             var monsters = []; // An array of monsters
 
             // Handle keyboard controls
             var keysDown = {};
 
             addEventListener("keydown", function (e) {
+                // console.log(hero);
                 keysDown[e.keyCode] = true;
             }, false);
 
@@ -67,49 +69,148 @@
 
             // Reset the game when the player catches a monster
             var reset = function () {
+                monstersDeleted = 0;
+                monsters = [];
                 hero.x = canvas.width / 2;
                 hero.y = canvas.height / 2;
 
                 for (i = 0; i < 3; i++) {
                     // Throw the monsters somewhere on the screen randomly
                     monsters.push({
-                        x:  32 + (Math.random() * (canvas.width - 64)),
-                        y:  32 + (Math.random() * (canvas.width - 64)),
-                        speed: 64
-                    });
-                }
-            };
+                        // Set monster inside the garden
+                        x:  32 + (Math.random() * (canvas.width - 76)), // x between the canvas width and 76
+                        y:  32 + (Math.random() * (canvas.height - 76)), // y between the canvas height and 76
+                        xVel: Math.floor(Math.random() * (128 - -128 + 1)) -128, // xVel between 64 and 128 pixels/sec
+                        yVel: Math.floor(Math.random() * (128 - -128 + 1)) -128, // yVel between 64 and 128 pixels/sec
+                        mass: Math.floor(Math.random() * (10 - 1 + 1)) + 1, // mass between 1 and 10
+                        move: function (modifier) {
+				                this.x += this.xVel * modifier;
+				                this.y += this.yVel * modifier;
+
+				                // Wall collision detection
+			  	                if( this.x + 65 >= canvas.width || this.x - 32 <= 0 ) {
+					                this.xVel = -this.xVel;
+				                }
+
+			 	                if( this.y + 65 >= canvas.height || this.y - 32 <= 0 ) {
+					                this.yVel = -this.yVel;
+				                }
+			                }, // move: function(modifier)
+                        intersects: function (otherMonster) {
+				                        // Compare the distance between the this monster's centre and the otherMonster's centre.
+                                        if ( this.x <= (otherMonster.x + 35)
+                                            && otherMonster.x <= (this.x + 35)
+                                            && this.y <= (otherMonster.y + 35)
+                                            && otherMonster.y <= (this.y + 35) ) {
+                                            return true;
+                                        }
+                                        return false;
+                                    } // intersects: function (otherMonster)
+                    }); // monsters.push
+                } // for 
+            }; // reset
+
+            function reaction(monster1, monster2) {
+				// Distance between centers
+				var dx = monster1.x - monster2.x;
+				var dy = monster1.y - monster2.y;
+
+				// Collision angle calculation
+				var collision_angle = Math.atan2(dy, dx);
+
+				// Velocity vectors
+				// Speed magnitude calculation
+				var mag1 =  Math.sqrt(monster1.xVel*monster1.xVel  +  monster1.yVel*monster1.yVel);
+				var mag2 =  Math.sqrt(monster2.xVel*monster2.xVel  +  monster2.yVel*monster2.yVel);
+
+				// Speed direction calculation
+				var dir1 = Math.atan2(monster1.yVel, monster1.xVel);
+				var dir2 = Math.atan2(monster2.yVel, monster2.xVel);
+
+				// Calculate velocity vectors components using rotation angle
+				var newXVel1 = mag1 * Math.cos(dir1 - collision_angle);
+				var newYVel1 = mag1 * Math.sin(dir1 - collision_angle);
+
+				var newXVel2 = mag2 * Math.cos(dir2 - collision_angle);
+				var newYVel2 = mag2 * Math.sin(dir2 - collision_angle);
+
+				// Apply 1D collision formula
+				var finalXVel1 = ((monster1.mass - monster2.mass)*newXVel1 + (2*monster2.mass*newXVel2))/(monster1.mass + monster2.mass);
+				var finalXVel2 = ((monster2.mass - monster1.mass)*newXVel2 + (2*monster2.mass*newXVel1))/(monster1.mass + monster2.mass);
+				var finalYVel1 = newYVel1;
+				var finalYVel2 = newYVel2;
+
+				// Translating new velocity vectors to the original axis system
+				monster1.xVel = Math.cos(collision_angle)*finalXVel1 + Math.cos(collision_angle+Math.PI/2)*finalYVel1;
+				monster1.yVel = Math.sin(collision_angle)*finalXVel1 + Math.sin(collision_angle+Math.PI/2)*finalYVel1;
+
+				monster2.xVel = Math.cos(collision_angle)*finalXVel2 + Math.cos(collision_angle+Math.PI/2)*finalYVel2;
+				monster2.yVel = Math.sin(collision_angle)*finalXVel2 + Math.sin(collision_angle+Math.PI/2)*finalYVel2;
+		    } // 'reaction' function
 
             // Update game objects
             var update = function (modifier) {
+                // Process 'hero' movements
                 if (38 in keysDown) { // Player holding up
-                    hero.y -= hero.speed * modifier;
-                }
-                if (40 in keysDown) { // Player holding down
-                    hero.y += hero.speed * modifier;
-                }
-                if (37 in keysDown) { // Player holding left
-                    hero.x -= hero.speed * modifier;
-                }
-                if (39 in keysDown) { // Player holding right
-                    hero.x += hero.speed * modifier;
-                }
-
-                for(i = 0; i < monsters.length; i++) {
-                // Collision detection
-                    if (
-                        hero.x <= (monsters[i].x + 32)
-                        && monsters[i].x <= (hero.x + 32)
-                        && hero.y <= (monsters[i].y + 32)
-                        && monsters[i].y <= (hero.y + 32)
-                        ) {
-                          ++monstersCaught;
-                          delete monsters[i];
-                        }
-                    if ( monsters.length == 0 ) {
-                        reset();
+                    if (( hero.y - 32 >= 0 )) {
+                        hero.y -= hero.speed * modifier;
                     }
                 }
+                if (40 in keysDown) { // Player holding down
+                    if (( hero.y + 64 <= canvas.height)) {
+                        hero.y += hero.speed * modifier;
+                    }
+                }
+                
+                if (37 in keysDown) { // Player holding left
+                    if (( hero.x - 32 >= 0 )) {
+                        hero.x -= hero.speed * modifier;
+                    }
+                }
+  
+                if (39 in keysDown) { // Player holding right
+                    if (( hero.x + 64 <= canvas.width)) {
+                        hero.x += hero.speed * modifier;
+                    }
+                }
+
+                // Process 'monsters' array
+                for(i = 0; i < monsters.length; i++) {
+                    // Check that monsters[i] isn't caught
+                    if (typeof monsters[i] != 'undefined') {
+                        // Move monsters
+                        monsters[i].move(modifier);
+
+                        if (monsters[i].intersects(hero)) {
+                                // debugger;
+                            // console.log("Collision between hero and monster[" + i + "]");
+                            ++monstersCaught;
+                            delete monsters[i];
+                            ++monstersDeleted;
+                        } // if
+
+                        // Collision detection between 'mosters[i]' and 'monsters[j]'
+                        for (j = 0; j < 3; j++) {
+                            // don't check the monster to itself or other caught monsters
+                            if ( i != j
+                            && typeof monsters[i] != 'undefined'
+                            && typeof monsters[j] != 'undefined') {
+                                // console.log(monsters[i]);
+                                if ( monsters[i].intersects(monsters[j]) ) {
+                                    // console.log("monsters[" + i + "] and monster[" + j + "] instersect");
+                                    reaction(monsters[i], monsters[j]);
+                                }
+                            } // if ( i != j && typeof ... 
+                        } // for j 
+
+                        // Check if all monsters of this scenario are caught
+                        if ( monsters.length == monstersDeleted ) {
+                            // debugger;
+                            reset();
+                        }
+                    } // if (typeof monsters[i] != 'undefined')
+
+                } // for
             };
 
             // Draw everything
@@ -124,7 +225,9 @@
 
                 if (monsterReady) {
                     for (i = 0; i < monsters.length; i++) {
-                        ctx.drawImage(monsterImage, monsters[i].x, monsters[i].y);
+                        if (typeof monsters[i] != 'undefined') {
+                            ctx.drawImage(monsterImage, monsters[i].x, monsters[i].y);
+                        }
                     }
                 }
 
