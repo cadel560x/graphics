@@ -14,16 +14,16 @@
             var canvas = document.getElementById("gamecanvas");
 		    var ctx = canvas.getContext("2d");
 
-            var rect; // Used to define an area for the 'restart' message
+            // Game objects
+            var hero = {
+                speed: 256 // movement in pixels per second
+            };
 
-            // Initialize the canvas
-            function init() {
-			    canvas.width = 512;
-                canvas.height = 480;
-			    canvas.style.border = "solid 1px black";
-		    }
-
+            var monstersCaught = 0;
+            var monstersDeleted = 0;
+            var monsters = []; // An array of monsters
             var gameOver = false; // Game sentinel
+            var rect; // Used to define an area for the 'restart' message
             var level = 0; // Level counter
 
             // Background image
@@ -58,14 +58,15 @@
             };
             devilImage.src = "images/devil.png";
 
-            // Game objects
-            var hero = {
-                speed: 256 // movement in pixels per second
-            };
+            // Initialize the canvas
+            function init() {
+			    canvas.width = 512;
+                canvas.height = 480;
+			    canvas.style.border = "solid 1px black";
 
-            var monstersCaught = 0;
-            var monstersDeleted = 0;
-            var monsters = []; // An array of monsters
+		    } // init
+
+            
 
             // Handle keyboard controls
             var keysDown = {};
